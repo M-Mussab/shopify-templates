@@ -1,0 +1,805 @@
+{% comment %}
+  SHOPIFY VIDEO SLIDER SECTION WITH PROPER FONT PICKER USAGE
+{% endcomment %}
+
+{%- style -%}
+  {# -- 1. LOAD ALL FONTS USED IN THIS SECTION -- #}
+  {% if section.settings.main_heading_font %}{{ section.settings.main_heading_font | font_face }}{% endif %}
+  {% if section.settings.main_description_font %}{{ section.settings.main_description_font | font_face }}{% endif %}
+  {% if section.settings.rating_font %}{{ section.settings.rating_font | font_face }}{% endif %}
+  {% if section.settings.default_font %}{{ section.settings.default_font | font_face }}{% endif %}
+
+  {# -- For each block font (review content, name, location) we also load them -- #}
+  {% for block in section.blocks %}
+    {% if block.settings.review_content_font %}{{ block.settings.review_content_font | font_face }}{% endif %}
+    {% if block.settings.review_name_font %}{{ block.settings.review_name_font | font_face }}{% endif %}
+    {% if block.settings.review_location_font %}{{ block.settings.review_location_font | font_face }}{% endif %}
+  {% endfor %}
+
+  /* Hide default Slick arrow icons */
+  .slick-prev.slick-arrow:before,
+  .slick-next.slick-arrow:before {
+    content: none !important;
+  }
+
+  /* --- Custom Arrow Styles for Slick Slider --- */
+  .custom-arrow {
+    position: absolute;
+    /* Move arrow 15px above the exact vertical center */
+    top: calc(50% - 15px);
+    transform: translateY(-50%);
+    z-index: 99999; /* Ensures arrows sit above other elements */
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black circle */
+    border: none;
+    cursor: pointer;
+    display: flex; /* Center arrow icon inside the circle */
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+  }
+  .slick-prev.custom-arrow {
+    left: 15px;
+  }
+  .slick-next.custom-arrow {
+    /* Give extra spacing on the right side */
+    right: 30px;
+  }
+  .custom-arrow:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  .custom-arrow svg {
+    width: 40px; /* Larger icon */
+    height: 40px;
+    transition: fill 0.3s ease;
+  }
+  .custom-arrow:hover svg {
+    fill: #ffffff;
+  }
+  /* Hide arrows on mobile */
+  @media only screen and (max-width: 767px) {
+    .custom-arrow { display: none; }
+  }
+
+  /* --- Star Rating Styles --- */
+  .star-rating-container-{{ section.id }} {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 15px;
+  }
+  .star-rating-wrapper-{{ section.id }} {
+    display: inline-block;
+    margin-top: -4.5px;
+    position: relative;
+    font-size: {{ section.settings.star_size }}px;
+    line-height: 1;
+    color: {{ section.settings.star_empty_color }};
+    flex-shrink: 0;
+    letter-spacing: 2px; /* 2px gap between stars */
+  }
+  .star-rating-foreground-{{ section.id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: {{ section.settings.star_filled_color }};
+    width: {{ section.settings.star_rating | divided_by: 5.0 | times: 100.0 }}%;
+  }
+  .star-rating-text-{{ section.id }} {
+    color: {{ section.settings.rating_text_color }};
+    font-size: {{ section.settings.rating_text_size }}px;
+    margin: 0;
+    line-height: 1.2;
+    /* Use the family/fallback approach */
+    font-family: {{ section.settings.rating_font.family | default: 'sans-serif' }}, {{ section.settings.rating_font.fallback_families | default: 'sans-serif' }};
+  }
+  .star-rating-text-{{ section.id }} span {
+    font-weight: bold;
+    margin-right: 4px; /* gap between rating number and text */
+  }
+
+  /* --- Base & Layout Styles --- */
+  .shopify-video-wrapper-{{ section.id }} {
+    width: 100%;
+    background: {{ section.settings.bg_color }};
+    position: relative;
+    /* Lowered z-index so the navbar (with higher stacking context) appears on top */
+    z-index: 1;
+    /* Use the family/fallback approach for default font */
+    font-family: {{ section.settings.default_font.family | default: 'sans-serif' }}, {{ section.settings.default_font.fallback_families | default: 'sans-serif' }};
+  }
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+  @media (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+  .shopify-video-container-{{ section.id }} {
+    margin: 0 auto;
+  }
+  /* Add 15px left/right padding to the slider container */
+  .shopify-video-slider-container {
+    /* padding-left: 15px;
+    padding-right: 15px; */
+    position: relative; /* for arrow positioning */
+  }
+
+  /* Desktop layout (≥1200px) */
+  @media (min-width: 1200px) {
+    .shopify-video-flex-container {
+      display: flex;
+      align-items: flex-start;
+    }
+    .shopify-video-text {
+      width: 35%;
+      max-width: 35%;
+      text-align: left;
+      margin-top: 20px;
+      padding-left: {{ section.settings.desktop_left_padding }}px;
+      padding-right: {{ section.settings.desktop_right_padding }}px;
+    }
+    .shopify-video-slider-container {
+      width: 65%;
+      max-width: 65%;
+    }
+  }
+
+  /* Tablet layout (768px–991px) */
+  @media (min-width: 768px) and (max-width: 991px) {
+    .shopify-video-flex-container {
+      display: block;
+    }
+    .shopify-video-text {
+      width: 100% !important;
+      margin: 0 auto 20px;
+      text-align: left !important;
+      /* padding-left: {{ section.settings.tablet_left_padding }}px !important;
+      padding-right: {{ section.settings.tablet_right_padding }}px !important; */
+    }
+    .shopify-video-slider-container {
+      width: 100%;
+      margin: 0 auto;
+    }
+  }
+
+  /* Mobile layout (≤767px) */
+  @media only screen and (max-width: 767px) {
+    .shopify-video-text {
+      /* padding-left: {{ section.settings.mobile_left_padding }}px;
+      padding-right: {{ section.settings.mobile_right_padding }}px; */
+    }
+  }
+
+
+  /* --- Slick Slider & Video Card Styles --- */
+  .shopify-slider-{{ section.id }} .slick-slide {
+    margin: 5px;
+  }
+  .shopify-slider-{{ section.id }} .slick-list {
+    margin: 0;
+  }
+  .shopify-video-wrapper-{{ section.id }} .slick-initialized {
+    visibility: visible !important;
+  }
+  .shopify-slider-video-frame-{{ section.id }} {
+    overflow: hidden;
+    border-radius: 0;
+    aspect-ratio: 8 / 15;
+    position: relative;
+  }
+  .shopify-slider-video-frame-{{ section.id }} video {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    aspect-ratio: 8 / 15;
+    border: none;
+  }
+  .shopify-slider-video-{{ section.id }} {
+    cursor: pointer;
+    position: relative;
+  }
+  .video-play-pause-toggle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    border: 2px solid #ffffff;
+    padding: 10px;
+    border-radius: 50%;
+    z-index: 10;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  .video-play-pause-toggle svg path {
+    fill: #ffffff;
+  }
+  .shopify-slider-video-{{ section.id }}:hover .video-play-pause-toggle {
+    border-color: #22E7E7;
+    background-color: #22E7E7;
+  }
+  @media only screen and (max-width: 589px) {
+    .shopify-video-text h2 {
+      width: 100%;
+      margin: 0 0 10px;
+    }
+    .shopify-video-text p {
+      max-width: 100%;
+      margin: 0 0 5px;
+    }
+  }
+{%- endstyle -%}
+
+<!-- Include Slick Carousel CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
+
+<div class="shopify-video-wrapper-{{ section.id }} section-{{ section.id }}-padding">
+  <div class="shopify-video-container-{{ section.id }} page-width">
+    <div class="shopify-video-flex-container">
+      <!-- Left Text Portion (35% width) -->
+      <div class="shopify-video-text">
+        {% if section.settings.show_star_rating %}
+          <div class="star-rating-container-{{ section.id }}">
+            <div
+              class="star-rating-wrapper-{{ section.id }}"
+              role="img"
+              aria-label="Rating: {{ section.settings.star_rating | round: 1 }} out of 5 stars"
+            >
+              ★★★★★
+              <div class="star-rating-foreground-{{ section.id }}">★★★★★</div>
+            </div>
+            {% if section.settings.rating_text != blank %}
+              <p class="star-rating-text-{{ section.id }}">
+                <span>{{ section.settings.rating_number }}</span>{{ section.settings.rating_text }}
+              </p>
+            {% endif %}
+          </div>
+        {% endif %}
+        {% if section.settings.main_heading != blank %}
+          <h2
+            style="
+                color: {{ section.settings.heading_color }};
+                font-size: {{ section.settings.heading_size }}px;
+              font-weight:800;
+                margin-bottom: 10px;
+                font-family: {{ section.settings.main_heading_font.family | default: 'sans-serif' }}, {{ section.settings.main_heading_font.fallback_families | default: 'sans-serif' }};
+            "
+          >
+            {{ section.settings.main_heading }}
+          </h2>
+        {% endif %}
+        {% if section.settings.main_description != blank %}
+          <p
+            style="
+              color: {{ section.settings.desc_color }};
+              font-size: {{ section.settings.desc_size }}px;
+              margin-bottom: 0;
+              font-family: {{ section.settings.main_description_font.family | default: 'sans-serif' }}, {{ section.settings.main_description_font.fallback_families | default: 'sans-serif' }};
+            "
+          >
+            {{ section.settings.main_description }}
+          </p>
+        {% endif %}
+      </div>
+
+      <!-- Slider Portion -->
+      <div class="shopify-video-slider-container">
+        <div class="shopify-slider-{{ section.id }}">
+          {%- for block in section.blocks -%}
+            <div class="shopify-slider-video-{{ section.id }}">
+              <div class="shopify-slider-video-frame-{{ section.id }}">
+                {% if block.settings.hosted_video != blank %}
+                  {%- if block.settings.video_thumbnail != blank -%}
+                    {% assign poster_url = block.settings.video_thumbnail | image_url: width: 600 %}
+                  {%- else -%}
+                    {% assign poster_url = block.settings.hosted_video.preview_image | image_url: width: 600 %}
+                  {%- endif -%}
+                  <video playsinline preload="none" poster="{{ poster_url }}">
+                    {% for source in block.settings.hosted_video.sources %}
+                      {% if source.format == 'mp4' %}
+                        <source src="{{ source.url }}" type="video/mp4">
+                      {% endif %}
+                    {% endfor %}
+                  </video>
+                  <!-- Play/Pause Overlay Button -->
+                  <button class="video-play-pause-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </button>
+                {% else %}
+                  <p>No video selected</p>
+                {% endif %}
+              </div>
+
+              <!-- Review Content Area -->
+              <div class="shopify-slider-video-content-{{ section.id }}" style="font-family: inherit;">
+                {% if block.settings.review_name != blank %}
+                  <p
+                    style="
+                        color: {{ block.settings.review_name_color }};
+                        font-size: {{ block.settings.review_name_size }}px;
+                        font-weight: bold;
+                      margin-bottom:0px !important;
+                        font-family: {{ block.settings.review_name_font.family | default: 'assistant' }}, {{ block.settings.review_name_font.fallback_families | default: 'sans-serif' }};
+                    "
+                  >
+                    {{ block.settings.review_name }}
+                  </p>
+                {% endif %}
+
+                {% if block.settings.review_content != blank %}
+                  <p
+                    style="
+                      color: {{ block.settings.review_content_color }};
+                      font-size: {{ block.settings.review_content_size }}px;
+                      margin-top: 4px !important;
+                      font-family: {{ block.settings.review_content_font.family | default: 'sans-serif' }}, {{ block.settings.review_content_font.fallback_families | default: 'sans-serif' }};
+                    "
+                  >
+                    {{ block.settings.review_content }}
+                  </p>
+                {% endif %}
+                {% if block.settings.review_location != blank %}
+                  <p
+                    style="
+                      color: {{ block.settings.review_location_color }};
+                      font-size: {{ block.settings.review_location_size }}px;
+                      margin-bottom: 0;
+                      font-family: {{ block.settings.review_location_font.family | default: 'sans-serif' }}, {{ block.settings.review_location_font.fallback_families | default: 'sans-serif' }};
+                    "
+                  >
+                    {{ block.settings.review_location }}
+                  </p>
+                {% endif %}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Include jQuery and Slick Carousel JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script>
+  // SVG for the play overlay button (used for video play/pause)
+  var playSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><path fill="#ffffff" d="M8 5v14l11-7z"/></svg>';
+
+  // Define custom arrow SVGs with increased size (updated: transparent background, larger dimensions)
+  var leftArrowSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="45" viewBox="0 0 24 36"><path d="M15 6 L9 18 L15 30" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" /></svg>';
+  var rightArrowSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="45" viewBox="0 0 24 36"><g transform="translate(24,0) scale(-1,1)"><path d="M15 6 L9 18 L15 30" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" /></g></svg>';
+
+  $('.shopify-slider-{{ section.id }}').slick({
+    dots: false,
+    infinite: true,
+    speed: 200,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    centerMode: false,
+    cssEase: 'linear',
+    autoplay: false,
+    swipe: true,
+    arrows: {% if section.blocks.size > 3 %} true {% else %} false {% endif %},
+    {% if section.blocks.size > 3 %}
+      prevArrow: "<button type='button' class='slick-prev custom-arrow'>" + leftArrowSVG + "</button>",
+      nextArrow: "<button type='button' class='slick-next custom-arrow'>" + rightArrowSVG + "</button>",
+    {% endif %}
+    responsive: [
+      {
+        breakpoint: 991,
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 1,
+          centerMode: false,
+          dots: false,
+          arrows: {% if section.blocks.size > 4 %} true {% else %} false {% endif %}
+        }
+      },
+      {
+        breakpoint: 767,
+        settings: {
+          slidesToShow: 1,
+          centerMode: true,
+          dots: false,
+          arrows: false
+        }
+      }
+    ]
+  });
+
+  // Initialize play overlay and video event listeners
+  $('.shopify-slider-{{ section.id }} video').each(function() {
+    var video = this;
+    var $frame = $(this).closest('.shopify-slider-video-frame-{{ section.id }}');
+    var $toggleBtn = $frame.find('.video-play-pause-toggle');
+    $toggleBtn.show().html(playSVG);
+    video.addEventListener('ended', function(){
+      $toggleBtn.show().html(playSVG);
+    });
+  });
+
+  // Toggle play/pause on slide click (ignoring clicks on dots)
+  $('.shopify-slider-{{ section.id }}').on('click', '.shopify-slider-video-{{ section.id }}', function(e) {
+    if ($(e.target).closest('.slick-dots').length) return;
+    e.preventDefault();
+
+    var $frame = $(this).find('.shopify-slider-video-frame-{{ section.id }}');
+    var video = $frame.find('video')[0];
+    var $toggleBtn = $frame.find('.video-play-pause-toggle');
+
+    $('.shopify-slider-{{ section.id }} video').each(function() {
+      if (this !== video) {
+        this.pause();
+        var otherFrame = $(this).closest('.shopify-slider-video-frame-{{ section.id }}');
+        otherFrame.find('.video-play-pause-toggle').show().html(playSVG);
+      }
+    });
+
+    if (video.paused) {
+      video.play();
+      $toggleBtn.hide();
+    } else {
+      video.pause();
+      $toggleBtn.show().html(playSVG);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Shopify Video Slider",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_star_rating",
+      "label": "Show Star Rating",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "star_rating",
+      "label": "Star Rating Value (0-5)",
+      "min": 0,
+      "max": 5,
+      "step": 0.1,
+      "default": 4.7
+    },
+    {
+      "type": "range",
+      "id": "star_size",
+      "label": "Star Size",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "star_filled_color",
+      "label": "Filled Star Color",
+      "default": "#FA8443"
+    },
+    {
+      "type": "color",
+      "id": "star_empty_color",
+      "label": "Empty Star Color",
+      "default": "#3b3838"
+    },
+    {
+      "type": "text",
+      "id": "rating_number",
+      "label": "Rating Number (e.g., 50,000+)",
+      "default": "50,000+"
+    },
+    {
+      "type": "text",
+      "id": "rating_text",
+      "label": "Rating Text (Optional)",
+      "default": "verified reviews"
+    },
+    {
+      "type": "color",
+      "id": "rating_text_color",
+      "label": "Rating Text Color",
+      "default": "#494949"
+    },
+    {
+      "type": "range",
+      "id": "rating_text_size",
+      "label": "Rating Text Size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "font_picker",
+      "id": "rating_font",
+      "label": "Rating Font Family",
+      "default": "sans-serif"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "main_heading",
+      "default": "DON’T TAKE OUR WORD FOR IT",
+      "label": "Heading"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading Size",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "default": 30,
+      "unit": "px"
+    },
+    {
+      "type": "font_picker",
+      "id": "main_heading_font",
+      "label": "Main Heading Font Family",
+      "default": "sans-serif"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "main_description",
+      "default": "See what others have to say about our product",
+      "label": "Description"
+    },
+    {
+      "type": "color",
+      "id": "desc_color",
+      "label": "Description color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "desc_size",
+      "label": "Description Size",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "font_picker",
+      "id": "main_description_font",
+      "label": "Main Description Font Family",
+      "default": "sans-serif"
+    },
+    {
+      "type": "font_picker",
+      "id": "default_font",
+      "label": "Default Font Family",
+      "default": "sans-serif"
+    },
+    {
+      "type": "header",
+      "content": "Text Padding Settings"
+    },
+    {
+      "type": "range",
+      "id": "desktop_left_padding",
+      "label": "Desktop Left Padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 13,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "desktop_right_padding",
+      "label": "Desktop Right Padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "tablet_left_padding",
+      "label": "Tablet Left Padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 13,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "tablet_right_padding",
+      "label": "Tablet Right Padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_left_padding",
+      "label": "Mobile Left Padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 13,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_right_padding",
+      "label": "Mobile Right Padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 52
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Video block",
+      "type": "block",
+      "settings": [
+        {
+          "type": "video",
+          "id": "hosted_video",
+          "label": "Hosted video"
+        },
+        {
+          "type": "image_picker",
+          "id": "video_thumbnail",
+          "label": "Custom video thumbnail (optional)"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "review_content",
+          "default": "Your review content here",
+          "label": "Review Content"
+        },
+        {
+          "type": "color",
+          "id": "review_content_color",
+          "label": "Content color",
+          "default": "#494949"
+        },
+        {
+          "type": "range",
+          "id": "review_content_size",
+          "label": "Content size",
+          "min": 12,
+          "max": 20,
+          "step": 1,
+          "default": 15,
+          "unit": "px"
+        },
+        {
+          "type": "font_picker",
+          "id": "review_content_font",
+          "label": "Review Content Font Family",
+          "default": "sans-serif"
+        },
+        {
+          "type": "color",
+          "id": "underline_color",
+          "label": "Underline color",
+          "default": "#ccc"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "review_name",
+          "default": "Rocky C.",
+          "label": "Name"
+        },
+        {
+          "type": "color",
+          "id": "review_name_color",
+          "label": "Name color",
+          "default": "#494949"
+        },
+        {
+          "type": "range",
+          "id": "review_name_size",
+          "label": "Name size",
+          "min": 12,
+          "max": 20,
+          "step": 1,
+          "default": 15,
+          "unit": "px"
+        },
+        {
+          "type": "font_picker",
+          "id": "review_name_font",
+          "label": "Review Name Font Family",
+          "default": "sans-serif"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "review_location",
+          "default": "Versatile",
+          "label": "Location"
+        },
+        {
+          "type": "color",
+          "id": "review_location_color",
+          "label": "Location color",
+          "default": "#494949"
+        },
+        {
+          "type": "range",
+          "id": "review_location_size",
+          "label": "Location size",
+          "min": 12,
+          "max": 20,
+          "step": 1,
+          "default": 15,
+          "unit": "px"
+        },
+        {
+          "type": "font_picker",
+          "id": "review_location_font",
+          "label": "Review Location Font Family",
+          "default": "sans-serif"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shopify Video Slider"
+    }
+  ]
+}
+{% endschema %}
