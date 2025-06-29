@@ -1,0 +1,591 @@
+{{ 'section-contact-form.css' | asset_url | stylesheet_tag }}
+<style>
+    /* Font overrides */
+    .field,
+    .field__label,
+    .form__message,
+    .section-richtext p,
+    .richtext p {
+      font-family: "Open Sans" !important;
+    }
+
+    /* LEFT-HEADING: slightly smaller */
+    .flex-item.form-block.contact .heading {
+      font-size: 2rem !important;
+      line-height: 1.2 !important;
+      margin-bottom: 0.5rem !important;
+    }
+
+    /* LEFT-SUBHEADING letter-spacing */
+    .flex-item.form-block.contact .richtext p {
+      letter-spacing: 0.5px;
+    }
+
+    /* Pulsing border around Maria’s image (110×110) */
+    .image-border-wrapper {
+      position: relative;
+      display: inline-block;
+      border-radius: 50%;
+      overflow: hidden;
+      width: 110px;
+      height: 110px;
+      margin: 0;
+      padding:0px;
+    }
+
+
+    /* Ensure the image always fits its container */
+    .image-border-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Layout tweaks */
+    .image-text-block .header-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Form styling */
+    .field {
+      margin-bottom: 1rem;
+    }
+    .field__input {
+      padding: 1.25rem 1rem !important;
+      min-height: 4rem !important;
+      font-size: 1rem !important;
+      border-radius: 0.25rem;
+    }
+    .field__input.text-area {
+      padding: 1.5rem 1rem !important;
+      min-height: 8rem !important;
+      width: 100% !important;
+      box-sizing: border-box;
+    }
+
+    /* Inputs once they have content */
+    .field__input:not(:placeholder-shown) {
+      padding-top: 1.75rem !important;
+      font-weight: bold !important;
+      font-size: 1.5rem !important;
+    }
+
+    /* Textareas on focus or once they have content */
+    .field__input.text-area:focus,
+    .field__input.text-area:not(:placeholder-shown) {
+      padding-top: 1.75rem !important;
+      font-weight: bold !important;
+      font-size: 1.5rem !important;
+    }
+
+    .contact__fields {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Reduce top padding above button */
+    .contact__button {
+      margin-top: 2rem;
+      text-align: left;
+    }
+    .contact__button .button {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+    }
+
+    /* Two-column layout */
+    .flexbox {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+    }
+    .flex-item:nth-child(1) {
+      max-width: 40%;
+      padding: 2rem 1rem 1rem;
+      padding-top:6rem;
+    }
+  .flex-item:nth-child(2) {
+      width: 53%;
+      padding: 2rem 1rem 1rem;
+    }
+  #CustomContactFormContainer {
+    width:100% !important;
+  }
+
+  .top-heading-form{
+    display:none;
+  }
+    /* Responsive @ 769px */
+    @media (max-width: 769px) {
+      .flexbox {
+        flex-direction: column-reverse;
+        width: 100%;
+      }
+      .top-heading{
+        display:none;
+      }
+      .flex-item {
+        min-width: 100%;
+      }
+      .top-heading-form{
+        display:block;
+      }
+    }
+    /* Responsive @ 550px */
+    @media (max-width: 550px) {
+      .image-border-wrapper {
+        width: 50px;
+        height: 50px;
+      }
+      .image-border-wrapper img {
+        object-fit: cover;
+      }
+       .Image-with-Form .heading ,.Image-with-Form .image-with-form-section .section-richtext , .Image-with-Form .richtext p{
+               text-align: left !important;
+
+       }
+        .field__input.text-area:focus,
+    .field__input.text-area:not(:placeholder-shown) {
+      padding-top: 3.25rem !important;
+    }
+    }
+
+    /* Custom message box styles */
+    .form-message-custom {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-family: "Open Sans", sans-serif;
+    font-size: 1.9rem;
+    line-height: 1.4;
+    font-weight: 600;
+    }
+    .form-message-custom.success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+    .form-message-custom.warning {
+        color: #856404;
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+    }
+    .form-message-custom.error {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+</style>
+
+<div
+  class="image-with-form-section"
+  id="image-with-form"
+  style="background-color: {{ section.settings.background_color }};"
+>
+  <div class="page-width">
+    <div class="flexbox">
+      <!-- LEFT: Top heading + Quote heading + quote text + bio -->
+      <div class="flex-item form-block contact">
+        <p
+          class="top-heading"
+          style="
+              font-size: {{ section.settings.top_text_size }}px;
+              color: {{ section.settings.top_text_color }};
+              font-weight: {{ section.settings.top_font_weight }};
+              font-family: {{ section.settings.top_font_family }};
+              margin-bottom: 1rem;
+            letter-spacing:1.88px;
+          "
+        >
+          {{ section.settings.top_heading }}
+        </p>
+        <h6 class="h1 heading" style="font-family:Poppins !important;font-weight:bold !important;">
+          {{ section.settings.heading }}
+        </h6>
+        <div class="richtext" style="font-family:Open Sans !important;">
+          {{ section.settings.subheading }}
+        </div>
+        <div class="section-richtext" style="font-family:Open Sans !important;">
+          {{ section.settings.richtext }}
+        </div>
+      </div>
+
+      <!-- RIGHT: Portrait + heading in row, then form-like structure -->
+      <div class="flex-item image-text-block">
+        <p
+          class="top-heading-form"
+          style="
+              font-size: {{ section.settings.top_text_size }}px;
+              color: {{ section.settings.top_text_color }};
+              font-weight: {{ section.settings.top_font_weight }};
+              font-family: {{ section.settings.top_font_family }};
+              margin-bottom: 1rem;
+            letter-spacing:1.88px;
+          "
+        >
+          {{ section.settings.top_heading }}
+        </p>
+        <div class="header-row">
+          <div class="image-border-wrapper">
+            <img
+              src="{{ section.settings.image | img_url: 'medium' }}"
+              alt="{{ section.settings.image_alt }}"
+              width="110"
+              height="110"
+            >
+          </div>
+          <h2 class="h2 " style="font-family:Poppins !important; font-weight:bold; margin:0;">
+            {{ section.settings.right_heading }}
+          </h2>
+        </div>
+
+        {%- liquid
+          assign form_wrapper_class = 'isolate'
+          if section.settings.animations_reveal_on_scroll
+            assign form_wrapper_class = 'isolate scroll-trigger animate--slide-in'
+          endif
+        -%}
+        <div id="CustomContactFormContainer" class="{{ form_wrapper_class }}">
+          <div id="customFormResponse" class="form-message-custom" style="display: none;" tabindex="-1"></div>
+
+          <div class="field">
+            <input
+              class="field__input"
+              autocomplete="name"
+              type="text"
+              id="ContactForm-name"
+              name="contact[name]"
+              placeholder="Full name"
+              required
+              aria-required="true"
+            >
+            <label class="field__label" for="ContactForm-name">Full name</label>
+          </div>
+
+          <div class="contact__fields">
+            <div class="field" style="flex:1;">
+              <input
+                type="tel"
+                id="ContactForm-phone"
+                class="field__input"
+                autocomplete="tel"
+                name="contact[phone]"
+                placeholder="{{ 'templates.contact.form.phone' | t }}"
+                required
+                aria-required="true"
+              >
+              <label class="field__label" for="ContactForm-phone">Phone</label>
+            </div>
+            <div class="field" style="flex:1;">
+              <input
+                autocomplete="email"
+                type="email"
+                id="ContactForm-email"
+                class="field__input"
+                name="contact[email]"
+                placeholder="{{ 'templates.contact.form.email' | t }}"
+                required
+                aria-required="true"
+              >
+              <label class="field__label" for="ContactForm-email">
+                {{- 'templates.contact.form.email' | t }}
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <input
+              class="field__input"
+              type="text"
+              id="ContactForm-address"
+              name="contact[address]"
+              placeholder="Address"
+              required
+              aria-required="true"
+            >
+            <label class="field__label" for="ContactForm-address">Address</label>
+          </div>
+
+          <div class="field">
+            <textarea
+              rows="4"
+              id="ContactForm-body"
+              class="text-area field__input"
+              name="contact[body]"
+              placeholder="{{ 'templates.contact.form.comment' | t }}"
+              required
+              aria-required="true"
+            ></textarea>
+            <label class="form__label field__label" for="ContactForm-body">
+              {{ section.settings.comment_label }}
+            </label>
+          </div>
+
+          <div class="contact__button">
+            <button type="button" id="customSubmitButton" class="button">GET IN TOUCH</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const submitButton = document.getElementById('customSubmitButton'); 
+    const formMessageDiv = document.getElementById('customFormResponse');
+    const formContainer = document.getElementById('CustomContactFormContainer');
+
+    if (!submitButton) {
+        console.error('Submit button with ID "customSubmitButton" not found.');
+        return; 
+    }
+
+    const fieldIds = [
+        'ContactForm-name',
+        'ContactForm-phone',
+        'ContactForm-email',
+        'ContactForm-address',
+        'ContactForm-body'
+    ];
+
+    submitButton.addEventListener('click', async function(event) {
+        const originalButtonText = submitButton.textContent;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Submitting...';
+
+        formMessageDiv.style.display = 'none'; 
+        formMessageDiv.className = 'form-message-custom'; 
+
+        // --- Validation Start ---
+        let isValid = true;
+        let firstInvalidField = null;
+
+        for (const id of fieldIds) {
+            const field = document.getElementById(id);
+            if (field && !field.value.trim()) { 
+                isValid = false;
+                if (!firstInvalidField) {
+                    firstInvalidField = field;
+                }
+            } else if (!field) {
+                console.warn(`Validation: Field with ID "${id}" not found.`);
+            }
+        }
+
+        if (!isValid) {
+            formMessageDiv.textContent = 'Please fill out all required fields.';
+            formMessageDiv.classList.add('error');
+            formMessageDiv.style.display = 'block';
+            formMessageDiv.focus(); 
+            
+            if (firstInvalidField) {
+                firstInvalidField.focus(); 
+            }
+            
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
+            return; 
+        }
+        // --- Validation End ---
+
+        const name = document.getElementById('ContactForm-name').value;
+        const phone = document.getElementById('ContactForm-phone').value;
+        const email = document.getElementById('ContactForm-email').value;
+        const address = document.getElementById('ContactForm-address').value;
+        const description = document.getElementById('ContactForm-body').value;
+
+const now = new Date();
+
+const formatter = new Intl.DateTimeFormat('en-AU', {
+    timeZone: 'Australia/Perth',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+});
+
+const parts = formatter.formatToParts(now);
+
+// Extract date and time parts
+let day, month, year, hour, minute, dayPeriod;
+for (const part of parts) {
+    switch (part.type) {
+        case 'day': day = part.value; break;
+        case 'month': month = part.value; break;
+        case 'year': year = part.value; break;
+        case 'hour': hour = part.value; break;
+        case 'minute': minute = part.value; break;
+        case 'dayPeriod': dayPeriod = part.value; break;
+    }
+}
+
+const time = `${hour}:${minute} ${dayPeriod}`;
+const submittedAt = `${month} ${day}, ${year}. at ${time}`;
+        const formDataPayload = {
+            name: name,
+            phone: phone,
+            email: email,
+            address: address,
+            description: description,
+            submittedAt: submittedAt
+        };
+
+        try {
+            const response = await fetch('https://n8n.kognifi.ai/webhook/submit-form-hanging-man', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formDataPayload),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                formMessageDiv.textContent = `Error: ${result.message || 'Submission failed with status: ' + response.status}`;
+                formMessageDiv.classList.add('error');
+            } else {
+                formMessageDiv.textContent = result.message;
+                if (result.status === 'success') {
+                    formMessageDiv.classList.add('success');
+                    // Manually reset fields
+                    fieldIds.forEach(id => {
+                        const field = document.getElementById(id);
+                        if (field) field.value = ''; // Fields are emptied here
+                    });
+                } else if (result.status === 'testing') {
+ formMessageDiv.classList.add('success');
+                    // Manually reset fields
+                    fieldIds.forEach(id => {
+                        const field = document.getElementById(id);
+                        if (field) field.value = ''; // Fields are emptied here
+                    });                } else {
+                    formMessageDiv.classList.add('error');
+                    formMessageDiv.textContent = result.message || 'Status: ' + result.status;
+                }
+            }
+            formMessageDiv.style.display = 'block';
+            formMessageDiv.focus(); 
+
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            formMessageDiv.textContent = 'An error occurred while submitting the form. Please try again. (' + error.message + ')';
+            formMessageDiv.classList.add('error');
+            formMessageDiv.style.display = 'block';
+            formMessageDiv.focus();
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
+        }
+    });
+});
+</script>
+
+{% schema %}
+{
+  "name": "Image with Form",
+  "class": "Image-with-Form",
+  "settings": [
+    {
+      "type": "text",
+      "id": "top_heading",
+      "label": "Top Heading Text",
+      "default": "Contact Us"
+    },
+    {
+      "type": "number",
+      "id": "top_text_size",
+      "label": "Top Heading Font Size (px)",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "top_text_color",
+      "label": "Top Heading Color",
+      "default": "#273755"
+    },
+    {
+      "type": "select",
+      "id": "top_font_weight",
+      "label": "Top Heading Font Weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "bold", "label": "Bold" }
+      ],
+      "default": "bold"
+    },
+    {
+      "type": "select",
+      "id": "top_font_family",
+      "label": "Top Heading Font Family",
+      "options": [
+        { "value": "Poppins, sans-serif", "label": "Poppins" },
+        { "value": "Open Sans, sans-serif", "label": "Open Sans" }
+      ],
+      "default": "Poppins, sans-serif"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Maria’s Image"
+    },
+    {
+      "type": "text",
+      "id": "right_heading",
+      "label": "Right Heading",
+      "default": "Get In Touch With Maria"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Left Heading",
+      "default": "We are your partners in making your home uniquely yours"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Left Subheading",
+      "default": "<p>Simply send us an email for an obligation free quote and availability. Typically replies within 2 hours.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "richtext",
+      "label": "Maria’s Bio (left column)",
+      "default": "<p>Maria is the heart and soul of The Hangmaster family. Far. More than just an office manager, she’s earned her reputation as the nicest human on earth—no exaggeration! Her unwavering dedication to both our team and our clients ensures that everyone feels heard and served to the very best of her ability.</p>"
+    },
+    {
+      "type": "text",
+      "id": "comment_label",
+      "label": "Textarea Label",
+      "default": "Please leave a detailed description of work required, and desired date."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Section Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "animations_reveal_on_scroll",
+      "label": "Enable scroll-reveal animations",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with Form (Spacing & Letter-Spacing)",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
