@@ -1,0 +1,153 @@
+<style>
+.how-its-work .arrows.slick-arrow {
+    position: absolute;
+    z-index: 99;
+    top: 50%;
+}
+.how-its-work .arrows.next.small-hide.slick-arrow {
+    right: 0px;
+    transform: rotate(180deg);
+}
+.how-its-work .arrows.previous.slick-arrow {
+    left: 0px;
+    transform: rotate(180deg);
+}
+  h3.slide-content{
+    font-weight:700;
+  }
+  .slide-content p{
+    font-family:Open Sans;
+  }
+  .button-text{
+    font-family:Quantico;
+  }
+</style>
+
+<div class="page-width how-work">
+  {% if section.settings.heading %}
+  <h2 class="center h1">{{ section.settings.heading }}</h2>
+  {% endif %}
+
+  <div class="buttons">
+    {% for block in section.blocks %}
+    <div class="button-container {% if forloop.index == 1 %}active{% endif %}">
+      <div class="circle-btn {% if forloop.index == 1 %}active{% endif %}" data-slide="{{ forloop.index }}">
+        {{ forloop.index }}
+      </div>
+      <div class="button-text">{{ block.settings.tab_name }}</div>
+    </div>
+    {% unless forloop.last %}
+    <div class="line"></div>
+    {% endunless %}
+    {% endfor %}
+  </div>
+
+  <div class="slider">
+    {% for block in section.blocks %}
+    <div class="slide">
+      <div class="grid">
+        <div class="grid__item image">
+          <img src="{{ block.settings.image | img_url: 'master' }}" alt="{{ block.settings.image.alt }}" width="100%" height="auto">
+          <div class="grey_bg small-hide"></div>
+        </div>
+        <div class="grid__item content">
+          {% if block.settings.right_richtext %}
+          <h3 class="slide-content">{{ block.settings.right_head }}</h3>
+          {% endif %}
+          {% if block.settings.right_richtext %}
+          <div class="slide-content">{{ block.settings.right_richtext }}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+$(document).ready(function () {
+  $('.how-its-work .slider').slick({
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: true,
+    prevArrow: '<div class="arrows previous small-hide"><svg xmlns="http://www.w3.org/2000/svg" width="57" height="26" viewBox="0 0 57 26" fill="none"><path d="M43.2006 1.00012L55.3606 13.0001M55.3606 13.0001L43.2006 25.0001M55.3606 13.0001H0.640625" stroke="#273755" stroke-width="2"/></svg></div>',
+    nextArrow: '<div class="arrows next small-hide"><svg xmlns="http://www.w3.org/2000/svg" width="57" height="26" viewBox="0 0 57 26" fill="none"><path d="M13.7994 1.00012L1.63938 13.0001M1.63938 13.0001L13.7994 25.0001M1.63938 13.0001H56.3594" stroke="#273755" stroke-width="2"/></svg></div>',
+    dots: false,
+    fade: false,
+    adaptiveHeight: true,
+    speed: 500,
+  });
+
+  $('.circle-btn').on('click', function () {
+    const slideIndex = $(this).data('slide') - 1; 
+    $('.slider').slick('slickGoTo', slideIndex); 
+
+    $('.circle-btn').removeClass('active');
+    $('.button-container').removeClass('active');
+
+    $(this).addClass('active');
+    $(this).closest('.button-container').addClass('active');
+  });
+
+  $('.slider').on('afterChange', function (event, slick, currentSlide) {
+    $('.circle-btn').removeClass('active');
+    $('.button-container').removeClass('active');
+    
+    const activeButton = $('.circle-btn').eq(currentSlide);
+    activeButton.addClass('active');
+    activeButton.closest('.button-container').addClass('active');
+  });
+});
+
+</script>
+
+{% schema %}
+{
+  "name": "How its work",
+  "class": "how-its-work",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "How It Works",
+      "label": "Section Heading"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "circle-tab",
+      "name": "Circle Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_name",
+          "default": "Quotation and Planning",
+          "label": "Tab Name"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "right_head",
+          "default": "Quotation and Planning",
+          "label": "Right Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "right_richtext",
+          "label": "Right Richtext",
+          "default": "<p>We start by understanding your unique needs...</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "How its work"
+    }
+  ]
+}
+{% endschema %}
