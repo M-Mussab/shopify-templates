@@ -1,0 +1,176 @@
+<section class="four-image-slider-section">
+{% if section.settings.bg_image != blank %} 
+  <div class="bg_img small-hide"><img src="{{ section.settings.bg_image|img_url:'master' }}" width="100%" height="auto"></div>
+{% endif %}
+
+{% if section.settings.bg_image_mob != blank %} 
+  <div class="bg_img medium-hide large-up-hide"><img src="{{ section.settings.bg_image_mob|img_url:'master' }}" width="100%" height="auto"></div>
+{% endif %}
+
+  <div class="page-width">
+    {% if section.settings.caption != blank %}<div class="caption"> {{ section.settings.caption }}</div> {% endif %}
+    <div class="grid image-grid">
+      {% for block in section.blocks %}
+        <div class="grid__item image-item">
+          <img src="{{ block.settings.image | img_url: 'master' }}" alt="{{ block.settings.image.alt }}" width="auto" height="auto">
+         {% if block.settings.author != blank %}  <p class="author">{{ block.settings.author }}</p>  {% endif %} 
+         {% if block.settings.designation != blank %}  <p class="designation">{{ block.settings.designation }}</p>  {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* .our-team .image-item {
+      width: 100%;
+      max-width: 100%;
+      text-align: center;
+  } */
+  .our-team .four-image-slider-section {
+    padding: 40px 20px;
+  }
+  .our-team .four-image-slider-section .bg_img {
+    position: relative;
+  }
+  .our-team .four-image-slider-section .bg_img img {
+    position: absolute;
+    z-index: -1;
+    top: -70px;
+    width: 100%;
+  } 
+  .our-team .image-item {
+    text-align: center;
+  }
+  .our-team .image-item img {
+      width: 100%;
+      min-height: 332px;
+      object-fit: cover;
+  }
+  .our-team .image-item .caption {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #555;
+  }
+
+  /* Responsive for smaller screens - turns grid into a slider */
+  @media (max-width: 768px) {
+    .our-team h2.section-heading {
+        text-align: center;
+    }
+    .our-team .slick-slide {
+        margin-right: 10px;
+    }
+    .our-team .image-grid {
+      display: block;
+    }
+    .our-team .image-grid.slick-slider {
+      display: flex;
+    }
+    .our-team .four-image-slider-section .bg_img img {
+        top: -50px !important;
+    }
+  }
+</style>
+
+<script>
+$(document).ready(function () {
+  function initializeSlider() {
+    if ($(window).width() <= 768) {
+      if (!$('.image-grid').hasClass('slick-initialized')) {
+        $('.image-grid').slick({
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          autoplay: true,    
+          autoplaySpeed: 3000,
+          dots: false,
+          arrows: true,
+          prevArrow: '<div class="arrows previous"><svg xmlns="http://www.w3.org/2000/svg" width="57" height="26" viewBox="0 0 57 26" fill="none"><path d="M43.2006 1.00012L55.3606 13.0001M55.3606 13.0001L43.2006 25.0001M55.3606 13.0001H0.640625" stroke="#273755" stroke-width="2"/></svg></div>',
+          nextArrow: '<div class="arrows next"><svg xmlns="http://www.w3.org/2000/svg" width="57" height="26" viewBox="0 0 57 26" fill="none"><path d="M13.7994 1.00012L1.63938 13.0001M1.63938 13.0001L13.7994 25.0001M1.63938 13.0001H56.3594" stroke="#273755" stroke-width="2"/></svg></div>',
+          autoplay: true,
+          autoplaySpeed: 3000,
+          centerMode: true,
+          infinite: true,
+          responsive: [
+            {
+              breakpoint: 480,
+              settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+              },
+            },
+          ],
+        });
+      }
+    } else {
+      if ($('.image-grid').hasClass('slick-initialized')) {
+        $('.image-grid').slick('unslick'); // Destroy slider if not mobile
+      }
+    }
+  }
+
+  // Initialize slider on page load
+  initializeSlider();
+
+  // Re-initialize slider on window resize
+  $(window).on('resize', function () {
+    initializeSlider();
+  });
+});
+
+</script>
+
+{% schema %}
+{
+  "name": "about team",
+   "class": "our-team",
+  "settings": [
+   {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Desktop Bg Image"
+   },
+   {
+      "type": "image_picker",
+      "id": "bg_image_mob",
+      "label": "Mobile Bg Image"
+   },
+   {
+      "type": "text",
+      "id": "caption",
+      "default": "— our team",
+      "label": "Caption"
+    }
+   ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+       {
+          "type": "text",
+          "id": "author",
+          "default": "ROGER",
+          "label": "Author Name"
+        },
+        {
+          "type": "text",
+          "id": "designation",
+          "default": "Owner",
+          "label": "Designation"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "about team",
+    }
+  ]
+}
+{% endschema %}
