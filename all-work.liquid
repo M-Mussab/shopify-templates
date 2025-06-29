@@ -1,0 +1,402 @@
+{% comment %}
+  sections/services-slider.liquid
+{% endcomment %}
+
+<section
+  id="services-slider-{{ section.id }}"
+  class="services-slider"
+  style="
+    padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px
+             {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;
+    background-color: {{ section.settings.background_color }};
+  "
+>
+  <div class="page-width" style="position:relative;">
+    <a href="{{ '#image-with-form' }}" title="Get a Quote">
+      <img
+        class="rotating-imgs"
+        src="{{ section.settings.rotating-img | img_url: section.settings.icon_image_size }}"
+        width="100"
+        height="100"
+        alt="Icon for Rotating Images"
+        loading="lazy"
+      >
+    </a>
+    <div class="services-slider__slides">
+      {% for block in section.blocks %}
+        <div class="services-slider__slide">
+          <!-- LEFT: main service image -->
+          <div class="services-slider__media">
+            {% if block.settings.image %}
+              <img
+                src="{{ block.settings.image | img_url: '1200x' }}"
+                alt="{{ block.settings.heading }}"
+                loading="lazy"
+              >
+            {% else %}
+              <div class="services-slider__placeholder">Upload an image</div>
+            {% endif %}
+          </div>
+
+          <!-- RIGHT: icon + heading, then subheading + nav -->
+          <div class="services-slider__content">
+            {% if block.settings.icon %}
+              <div class="services-slider__icon-heading">
+                <div
+                  class="services-slider__icon-wrapper"
+                  style="border: 1px solid {{ block.settings.icon_border_color }};"
+                >
+                  <img
+                    class="service-icon-img"
+                    src="{{ block.settings.icon | img_url: section.settings.icon_image_size }}"
+                    alt="Icon for {{ block.settings.heading }}"
+                    loading="lazy"
+                  >
+                </div>
+                {% if block.settings.heading %}
+                  <h3
+                    class="services-slider__heading"
+                    style="
+                      font-size: {{ section.settings.heading_size }}px;
+                      font-weight: {{ section.settings.heading_weight }};
+                      color: {{ section.settings.heading_color }};
+                    "
+                  >
+                    {{ block.settings.heading }}
+                  </h3>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {% if block.settings.subheading %}
+              <p
+                class="services-slider__subheading"
+                style="
+                  font-size: {{ section.settings.subheading_size }}px;
+                  font-weight: {{ section.settings.subheading_weight }};
+                  color: {{ section.settings.subheading_color }};
+                  margin-bottom: {{ section.settings.subheading_nav_gap }}px;
+                "
+              >
+                {{ block.settings.subheading }}
+              </p>
+            {% endif %}
+
+            <div class="services-slider__nav">
+              <button type="button" class="services-slider__prev" aria-label="Previous">←</button>
+              <button type="button" class="services-slider__next" aria-label="Next">→</button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .page-width {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Slick carousel CSS */
+  @import url('https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css');
+  @import url('https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css');
+
+  .services-slider__slide {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 2em;
+    position: relative;
+  }
+
+  /* continuously rotating image */
+  .rotating-imgs {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 10;
+    transform-origin: center;
+    animation: continuous-rotate 6s linear infinite;
+  }
+  @keyframes continuous-rotate {
+    from   { transform: rotate(0deg); }
+    to     { transform: rotate(-360deg); }
+  }
+
+  /* FIXED-SIZE IMAGE BOX */
+  .services-slider__media {
+    flex: 1 1 50%;
+    height: 400px;
+    overflow: hidden;
+  }
+  .services-slider__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(8px); /* Initial blur to match "Animated Image Slider" */
+    transition: filter 0.7s ease-in-out; /* Match Slick speed */
+  }
+  .slick-active .services-slider__media img {
+    filter: blur(0px); /* Active slide's image is sharp */
+  }
+
+  .services-slider__placeholder {
+    background: #f0f0f0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ICON + HEADING side-by-side */
+  .services-slider__icon-heading {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: {{ section.settings.heading_subheading_gap }}px;
+  }
+  .services-slider__icon-wrapper {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+    justify-content: center;
+  }
+  .services-slider__icon-wrapper .service-icon-img { /* Target icon specifically */
+    width: 60%;
+    height: 60%;
+    filter: none !important; /* Ensure icons are not blurred */
+    transition: none !important;
+  }
+  .services-slider__heading {
+    margin: 0;
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    color: {{ section.settings.heading_color }};
+  }
+
+  /* TEXT COLUMN */
+  .services-slider__content {
+    flex: 1 1 50%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 25px !important;
+    align-items: flex-start;
+  }
+
+  /* NAV ARROWS */
+  .services-slider__nav {
+    display: flex;
+    gap: 1em;
+    margin-top: {{ section.settings.subheading_nav_gap }}px;
+  }
+  .services-slider__nav button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #273755;
+    color: white;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  /* Reset subheading padding by default */
+  .services-slider__subheading {
+    margin-bottom: {{ section.settings.subheading_nav_gap }}px;
+    padding-right: 0;
+  }
+
+  /* --- NEW: Animation for text content to mimic "Animated Image Slider" --- */
+  @keyframes services-content-appear {
+    from {
+      opacity: 0;
+      transform: translateY(100px); /* Match "unique-showcontent" transform */
+      filter: blur(33px);          /* Match "unique-showcontent" blur */
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+
+  /* Initial state for text elements (when slide is not active or before animation) */
+  .services-slider__slide .services-slider__icon-heading,
+  .services-slider__slide .services-slider__heading,
+  .services-slider__slide .services-slider__subheading,
+  .services-slider__slide .services-slider__nav {
+    opacity: 0; /* Start transparent */
+    /* The filter and transform are applied by the animation directly */
+  }
+
+  /* Apply animation to text elements when slide is active */
+  .slick-active .services-slider__icon-heading {
+    animation: services-content-appear 0.4s ease-in-out 0.2s forwards; /* Delay after slide fades in */
+  }
+  /* Note: .services-slider__heading is inside .services-slider__icon-heading,
+     so animating the parent (.services-slider__icon-heading) should be enough.
+     If you want separate animation for icon and heading, target .services-slider__heading directly.
+     For now, let's assume animating the group is fine.
+  */
+  .slick-active .services-slider__icon-heading .services-slider__heading{
+        animation: services-content-appear 0.4s ease-in-out 0.4s forwards; /* Staggered delay */
+
+  }
+  .slick-active .services-slider__subheading {
+    animation: services-content-appear 0.4s ease-in-out 0.6s forwards; /* Staggered delay */
+  }
+  .slick-active .services-slider__nav {
+    animation: services-content-appear 0.4s ease-in-out 0.8s forwards; /* Staggered delay */
+  }
+  /* --- End of new animation styles --- */
+
+
+  @media (min-width: 769px) {
+    .services-slider__subheading {
+      padding-right: 60px;
+    }
+  }
+
+  /* MOBILE STYLES */
+  @media (max-width: 768px) {
+    .services-slider__slide {
+      flex-direction: column !important;
+      gap: 1em;
+    }
+    .services-slider__media {
+      width: 100%;
+      height: 400px !important;
+      margin-bottom: 1em;
+    }
+    .services-slider__icon-heading {
+      align-items: center; /* Already there, good */
+    }
+    .services-slider__heading {
+      font-size: 1.5rem !important;
+    }
+    .services-slider__subheading {
+      padding-right: 0 !important;
+      font-size: 1rem !important;
+    }
+    .services-slider__nav {
+      margin-top: {{ section.settings.subheading_nav_gap }}px !important;
+    }
+  }
+
+  /* VERY SMALL SCREENS */
+  @media (max-width: 500px) {
+    .rotating-imgs {
+      display: none !important;
+    }
+    .services-slider__media {
+      aspect-ratio: 1 / 1;
+      height: auto !important;
+    }
+  }
+
+  /* ── LARGE SCREEN OVERRIDES (≥1024px) ── */
+  @media (min-width: 1024px) {
+    .services-slider__media {
+      height: 400px !important;
+      overflow: hidden;
+      padding-right: 20px;
+    }
+    .services-slider__icon-heading {
+      flex-direction: column !important;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .services-slider__icon-wrapper {
+      width: 60px !important;
+      height: 60px !important;
+    }
+    .services-slider__icon-wrapper .service-icon-img {
+      width: 70% !important;
+      height: 70% !important;
+    }
+    .services-slider__subheading {
+      padding-right: 80px !important;
+    }
+  }
+</style>
+
+<!-- jQuery + Slick JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script>
+  $(function(){
+    var $slider = $('#services-slider-{{ section.id }} .services-slider__slides');
+
+    $slider.slick({
+      slidesToShow: 1,
+      infinite: true,
+      arrows: false,
+      autoplay: true,
+      autoplaySpeed: 10000,
+
+    });
+
+    $('#services-slider-{{ section.id }}')
+      .on('click', '.services-slider__prev', function(){ $slider.slick('slickPrev'); })
+      .on('click', '.services-slider__next', function(){ $slider.slick('slickNext'); });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Services Slider",
+  "settings": [
+    { "type": "number", "id": "padding_top",      "label": "Top padding (px)",                 "default": 20 },
+    { "type": "number", "id": "padding_bottom",   "label": "Bottom padding (px)",              "default": 20 },
+    { "type": "number", "id": "padding_left",     "label": "Left padding (px)",                "default": 20 },
+    { "type": "number", "id": "padding_right",    "label": "Right padding (px)",               "default": 20 },
+    { "type": "color",  "id": "background_color", "label": "Background color",                 "default": "#ffffff" },
+    { "type": "text",   "id": "icon_image_size",  "label": "Icon image dimension (eg '200x')", "default": "200x" },
+    { "type": "number", "id": "icon_heading_gap", "label": "Gap between icon & heading (px)",   "default": 4 },
+    { "type": "number", "id": "heading_size",     "label": "Heading size (px)",                "default": 24 },
+    {
+      "type": "select", "id": "heading_weight", "label": "Heading weight",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "bold",   "label": "Bold" },
+        { "value": "bolder","label": "Bolder" }
+      ], "default": "bold"
+    },
+    { "type": "color", "id": "heading_color",      "label": "Heading color",          "default": "#1a1a1a" },
+    { "type": "number", "id": "heading_subheading_gap", "label": "Gap below heading (px)", "default": 4 },
+    { "type": "number", "id": "subheading_size",        "label": "Subheading size (px)",   "default": 16 },
+    {
+      "type": "select", "id": "subheading_weight", "label": "Subheading weight",
+      "options": [
+        { "value": "normal","label":"Normal" },
+        { "value": "bold",  "label":"Bold" }
+      ], "default": "normal"
+    },
+    { "type": "color",  "id": "subheading_color", "label": "Subheading color",        "default": "#555555" },
+    { "type": "number", "id": "subheading_nav_gap", "label": "Gap above arrows (px)",   "default": 12 },
+    { "type": "image_picker","id": "rotating-img", "label": "Rotating Image" }
+  ],
+  "blocks": [
+    {
+      "type": "service",
+      "name": "Service",
+      "settings": [
+        { "type": "image_picker","id": "image",            "label": "Main service image" },
+        { "type": "image_picker","id": "icon",             "label": "Service icon" },
+        { "type": "color",       "id": "icon_border_color","label": "Icon border color","default":"#f9f9f9" },
+        { "type": "text",        "id": "heading",          "label": "Heading","default":"Service Title" },
+        { "type": "text",        "id": "subheading",       "label": "Subheading","default":"Role or Subtitle" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Services Slider", "category": "Custom" }
+  ]
+}
+{% endschema %}
