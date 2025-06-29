@@ -1,0 +1,297 @@
+<style>
+  .tv-brackets-section {
+    padding: 40px 0;
+    text-align: left;
+    position: relative;
+  }
+
+  /* Slick Slider specific styles */
+  .tv-brackets-grid {
+    /* Remove flex/scroll properties, Slick will handle layout */
+    padding: 0 ;
+    position: relative;
+  }
+  
+  /* Add spacing between slick slides */
+  .tv-brackets-grid .slick-slide {
+    margin: 0 10px;
+  }
+
+  /* Ensure the container for the slides is visible */
+  .tv-brackets-grid .slick-list {
+    overflow: visible !important;
+  }
+
+  .bracket-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%; /* Slick will manage the width */
+    min-width:250px; /* Override min-width for slick */
+    position: relative;
+    border: 1.5px solid var(--card-border-color, transparent);
+    /* Add height to ensure cards are same size if content differs */
+    height: 100%; 
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bracket-card img {
+    max-width: 100%;
+    max-height:250px;
+    height: auto;
+    margin-bottom: 15px;
+  }
+
+  .bracket-price {
+    color: #22e7e7;
+    font-size: 25px;
+    font-weight: 750;
+  }
+
+  .bracket-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 10px 0;
+    flex-grow: 1; /* Pushes button to the bottom */
+  }
+
+  .bracket-features {
+    text-align: left;
+    margin: 10px 0;
+  }
+
+  .bracket-features ul {
+    padding-left: 20px;
+  }
+
+  
+
+  .badge-common {
+    position: absolute;
+    top: -16px;
+    right: 20px;
+    margin: auto;
+    width: max-content;
+    z-index: 10;
+    background: #22e7e7;
+    color: white;
+    padding: 5px 15px;
+    font-size: 13px;
+    border-radius: 20px;
+    font-weight: bold;
+  }
+
+  .slider-arrow {
+    display: flex; /* Always use flex for alignment */
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #22e7e7;
+    color: white;
+    font-size: 24px;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 15;
+    /* Hide arrows if they are disabled by slick (e.g. not enough slides) */
+    &.slick-disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+  }
+
+  .slider-arrow.left {
+    left: -10px; /* Adjust position for better visibility on desktop */
+  }
+
+  .slider-arrow.right {
+    right: -10px; /* Adjust position for better visibility on desktop */
+  }
+
+  @media (max-width: 990px) {
+    .slider-arrow.left {
+      left: 10px;
+    }
+    .slider-arrow.right {
+      right: 10px;
+    }
+  }
+</style>
+
+<!-- Add Slick Slider CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+<section class="tv-brackets-section">
+<div class="page-width">
+  
+  <p class="caption">{{ section.settings.section_title }}</p>
+  
+  <!-- The custom arrows for Slick to use. NOTE: The onclick is removed. -->
+  <div class="slider-arrow left"><</div>
+  <div class="slider-arrow right">></div>
+  
+  <div class="tv-brackets-grid" id="bracketGrid-{{ section.id }}">
+    {% for block in section.blocks %}
+      {% if block.type == 'bracket_card' %}
+        <div><!-- This extra div is how SlickJS wraps each slide -->
+          <div
+            class="bracket-card"
+            style="--card-border-color: {{ block.settings.border_color | default: 'transparent' }}"
+          >
+            {% if block.settings.most_common %}
+              <div class="badge-common">MOST COMMON</div>
+            {% endif %}
+            {% if block.settings.bracket_image != blank %}
+              <img src="{{ block.settings.bracket_image | img_url: '600x' }}" alt="{{ block.settings.bracket_title }}">
+            {% endif %}
+            <div class="bracket-price">{{ block.settings.bracket_price }}</div>
+            <div class="bracket-title">{{ block.settings.bracket_title }}</div>
+            <div class="bracket-features">
+              <ul>
+                {% assign features = block.settings.bracket_features | split: ',' %}
+                {% for feature in features %}
+                  <li>{{ feature | strip }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+</section>
+<!-- Add jQuery (Slick dependency) and Slick Slider JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+<script>
+  $(document).ready(function(){
+    // Use a unique ID for the slider based on the section ID to avoid conflicts
+    const sliderId = '#bracketGrid-{{ section.id }}';
+
+    $(sliderId).slick({
+      infinite: true,
+      slidesToShow: 3,
+      slidesToScroll: 1,
+      dots: false,
+      arrows: true,
+      prevArrow: $('.slider-arrow.left'), // Use our custom left arrow
+      nextArrow: $('.slider-arrow.right'), // Use our custom right arrow
+      responsive: [
+        {
+          breakpoint: 990, // For tablets
+          settings: {
+            slidesToShow: 2,
+            slidesToScroll: 1
+          }
+        },
+        {
+          breakpoint: 767, // For mobile phones
+          settings: {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+          }
+        }
+      ]
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "TV Brackets Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Heading",
+      "default": "TV Brackets"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "bracket_card",
+      "name": "Bracket Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "bracket_image",
+          "label": "Bracket Image"
+        },
+        {
+          "type": "text",
+          "id": "bracket_title",
+          "label": "Bracket Title",
+          "default": "Tilt Bracket"
+        },
+        {
+          "type": "text",
+          "id": "bracket_price",
+          "label": "Price",
+          "default": "$180 each"
+        },
+        {
+          "type": "textarea",
+          "id": "bracket_features",
+          "label": "Bracket Features (separate with commas)",
+          "default": "Installed on all types of walls, Tilt adjustment"
+        },
+        {
+          "type": "checkbox",
+          "id": "most_common",
+          "label": "Mark as Most Common",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "border_color",
+          "label": "Card Border Color",
+          "default": "#22e7e7"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "TV Brackets Section",
+      "blocks": [
+        {
+          "type": "bracket_card",
+          "settings": {
+            "bracket_title": "Tilt Bracket",
+            "bracket_price": "$180 each",
+            "bracket_features": "Installed on all types of walls, Tilt adjustment"
+          }
+        },
+        {
+          "type": "bracket_card",
+          "settings": {
+            "bracket_title": "Solid Mount Bracket",
+            "bracket_price": "$110 each",
+            "bracket_features": "Installed on all types of walls, Fixed position",
+            "most_common": true
+          }
+        },
+        {
+          "type": "bracket_card",
+          "settings": {
+            "bracket_title": "Full-Motion Bracket",
+            "bracket_price": "$275 up to 80 inch / $700 for 81+ inch",
+            "bracket_features": "Installed on all types of walls, Fully adjustable"
+          }
+        },
+        {
+          "type": "bracket_card",
+          "settings": {
+            "bracket_title": "Ceiling Mount Bracket",
+            "bracket_price": "$350 each",
+            "bracket_features": "Installed on ceilings, Tilt and swivel"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
