@@ -1,0 +1,379 @@
+<div class="unique-animated-image-slider {% unless section.settings.header_check %}page-width{% endunless %} ">
+  <div id="unique-slide">
+    {% for block in section.blocks %}
+      <div class="unique-item" style="background-image: url({{ block.settings.image | img_url: 'master' }});">
+        {% if block.settings.show_overlay %}
+          <div
+            class="unique-item-overlay"
+            style="background-color: {{ block.settings.overlay_color }}; opacity: {{ block.settings.overlay_opacity }}; display:block !important"
+          ></div>
+        {% endif %}
+        <div class="unique-content">
+          <div class="unique-name">{{ block.settings.title }}</div>
+          <div class="unique-des">{{ block.settings.description }}</div>
+          {% unless section.settings.header_check %}
+            <div class="unique-buttons-inline">
+              <button class="unique-prev-inline-btn"><i class="fa-solid fa-angle-left"></i></button>
+              <button class="unique-next-inline-btn"><i class="fa-solid fa-angle-right"></i></button>
+            </div>
+          {% endunless %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% if section.settings.header_check %}
+    <div class="unique-buttons">
+      <button id="unique-prev-{{ section.id }}"><i class="fa-solid fa-angle-left"></i></button>
+      <button id="unique-next-{{ section.id }}"><i class="fa-solid fa-angle-right"></i></button>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+    .unique-animated-image-slider {
+      position: relative;
+      height: 600px;
+      background-color: #F5F5F5;
+      box-shadow: 0 30px 50px #DBDBDB;
+      overflow-x: hidden !important;
+    }
+    #unique-slide {
+      width: max-content;
+      margin-top: 50px;
+    }
+    .unique-item {
+      width: 200px;
+      height: 300px;
+      background-position: 50% 50%;
+      display: inline-block;
+      transition: 0.5s;
+      background-size: cover;
+      position: absolute;
+      z-index: 1;
+      top: 50%;
+      transform: translate(0, -50%);
+      border-radius: 0;       /* straight corners */
+      box-shadow: 0 30px 50px #505050;
+      cursor: pointer;
+    }
+    .unique-item:nth-child(1) {
+      left: 0;
+      top: 0;
+      transform: translate(0, 0);
+      border-radius: 0;
+      width: 100%;
+      height: 100%;
+      box-shadow: none;
+    }
+    .unique-item:nth-child(2) {
+      left: 50%;
+    }
+    .unique-item:nth-child(3) {
+      left: calc(50% + 220px);
+    }
+    .unique-item:nth-child(4) {
+      left: calc(50% + 440px);
+    }
+    .unique-item:nth-child(n+5) {
+      left: calc(50% + 660px);
+      opacity: 0;
+    }
+    .unique-item-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      border-radius: 0;       /* straight corners */
+    }
+    .unique-item .unique-content {
+      position: absolute;
+      top: 50%;
+      left: 100px;
+      width: 400px;
+      text-align: left;
+      color: #eee;
+      transform: translate(0, -50%);
+      display: none;
+      font-family: system-ui;
+      z-index: 3;
+    }
+    .unique-item:nth-child(1) .unique-content {
+      display: block;
+    }
+   .unique-item .unique-name {
+    font-size: 40px;
+     font-family:Poppins;
+    font-weight: bold;
+    line-height: 1.3;
+    opacity: 0;
+    animation: unique-showcontent 1s ease-in-out 1 forwards;
+  }
+
+    .unique-item .unique-des {
+      margin: 20px 0;
+      opacity: 0;
+      font-family:Open Sans;
+      animation: unique-showcontent 1s ease-in-out 0.3s 1 forwards;
+    }
+
+    /* Styles for buttons when header_check is FALSE (inline with content) */
+    .unique-buttons-inline {
+      margin-top: 20px; /* Space after description */
+      display: none; /* Initially hidden for all slides */
+      opacity: 0;
+      animation: unique-showcontent 0.7s ease-in-out  1 forwards; /* Animate with content */
+    }
+
+    .unique-item:nth-child(1) .unique-buttons-inline {
+      display: block; /* Show only for the active slide */
+    }
+
+    .unique-buttons-inline button {
+      width: 45px; /* Slightly smaller or adjust as needed */
+      height: 45px;
+      border-radius: 50%;
+      border: 1px solid #ccc; /* Lighter border for inline */
+      transition: 0.5s;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 10px; /* Space between buttons */
+      background-color: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+    }
+    .unique-buttons-inline button i {
+      font-size: 20px;
+      color: #fff; /* White icons for inline, assuming dark overlay/image */
+    }
+     .unique-buttons-inline button:hover {
+      background-color: #22e7e7;
+    }
+    .unique-buttons-inline button:hover i {
+      color: #333;
+    }
+
+
+    @keyframes unique-showcontent {
+      from {
+        opacity: 0;
+        transform: translate(0, 100px);
+        filter: blur(33px);
+      }
+      to {
+        opacity: 1;
+        transform: translate(0, 0);
+        filter: blur(0);
+      }
+    }
+
+    /* Styles for buttons when header_check is TRUE (absolutely positioned) */
+    .unique-buttons {
+      position:absolute;
+      bottom: 10px;
+      left: 50%;
+      margin-left: -20px;
+      z-index: 10;
+      text-align: start;
+      width: 100%;
+    }
+
+
+
+    .unique-buttons button { /* These are the styles for the #unique-prev and #unique-next */
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 1px solid #555;
+      transition: 0.5s;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 5px;
+      background-color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+    }
+    .unique-buttons button i {
+      font-size: 24px;
+      color: #333;
+    }
+    .unique-buttons button:hover {
+      background-color: #22e7e7;
+    }
+
+    @media (max-width: 768px) {
+      .unique-animated-image-slider {
+        height: 400px;
+        padding: 20px;
+      }
+      .unique-item {
+        width: 150px;
+        height: 200px;
+      }
+      .unique-item .unique-content {
+        left: 20px;
+        width: 50%; /* Give more space */
+      }
+      .unique-item .unique-name {
+        font-size: 24px;
+      }
+      .unique-item .unique-des {
+        font-size: 14px;
+        width: 90%;
+      }
+      /* Adjust inline buttons for mobile too if needed */
+      .unique-buttons-inline button {
+        width: 40px;
+        height: 40px;
+      }
+      .unique-buttons-inline button i {
+        font-size: 18px;
+      }
+    }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof FontAwesome === 'undefined') {
+      var fontAwesomeLink = document.createElement('link');
+      fontAwesomeLink.rel = 'stylesheet';
+      fontAwesomeLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css';
+      document.head.appendChild(fontAwesomeLink);
+    }
+
+    function forceReflow(element) {
+      void element.offsetWidth;
+    }
+
+    const slideElement = document.getElementById('unique-slide');
+    const isHeaderMode = {{ section.settings.header_check | json }};
+
+    function nextSlideAction() {
+      const lists = document.querySelectorAll('#unique-slide .unique-item');
+      if (lists.length > 0) {
+        slideElement.appendChild(lists[0]);
+        forceReflow(slideElement);
+      }
+    }
+
+    function prevSlideAction() {
+      const lists = document.querySelectorAll('#unique-slide .unique-item');
+      if (lists.length > 0) {
+        slideElement.prepend(lists[lists.length - 1]);
+        forceReflow(slideElement);
+      }
+    }
+
+    if (isHeaderMode) {
+      const nextButton = document.getElementById('unique-next-{{section.id}}');
+      const prevButton = document.getElementById('unique-prev-{{section.id}}');
+      if (nextButton) nextButton.onclick = nextSlideAction;
+      if (prevButton) prevButton.onclick = prevSlideAction;
+    } else {
+      document.querySelectorAll('.unique-next-inline-btn').forEach(function(button) {
+        button.onclick = nextSlideAction;
+      });
+      document.querySelectorAll('.unique-prev-inline-btn').forEach(function(button) {
+        button.onclick = prevSlideAction;
+      });
+    }
+
+    document.querySelectorAll('.unique-item').forEach(function(item) {
+      item.addEventListener('click', function(event) {
+        // Prevent if the click is on a button itself
+        if (event.target.closest('button')) {
+          return;
+        }
+        event.preventDefault();
+        const items = document.querySelectorAll('#unique-slide .unique-item');
+        const currentIndex = Array.from(items).indexOf(this);
+        if (currentIndex >= 1) { // If not the first item
+          for (let i = 0; i < currentIndex; i++) {
+            // Directly call the action instead of simulating a click on a potentially non-existent ID
+            nextSlideAction();
+          }
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Animated Image Slider",
+  "settings": [
+    {
+      "type": "checkbox",
+      "label": "Using as a header",
+      "id": "header_check",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Slide Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Slide Title",
+          "default": "Slide Title"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Slide Description",
+          "default": "Slide description goes here"
+        },
+        {
+          "type": "header",
+          "content": "Overlay Settings"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_overlay",
+          "label": "Show Overlay",
+          "default": true,
+          "info": "Add a colored overlay to make text more visible on the image"
+        },
+        {
+          "type": "color",
+          "id": "overlay_color",
+          "label": "Overlay Color",
+          "default": "#000000"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "min": 0,
+          "max": 0.9,
+          "step": 0.1,
+          "label": "Overlay Opacity",
+          "default": 0.3,
+          "info": "Adjust transparency of the overlay"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Animated Image Slider",
+      "category": "Custom",
+      "blocks": [
+        { "type": "slide" },
+        { "type": "slide" },
+        { "type": "slide" },
+        { "type": "slide" },
+        { "type": "slide" }
+      ]
+    }
+  ]
+}
+{% endschema %}
