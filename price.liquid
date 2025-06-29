@@ -1,0 +1,321 @@
+<style>
+  .contact__field-error {
+      display: none;
+  }
+  ul {
+    /* list-style: none; */
+    padding: 0;
+  }
+  .pricing-section .grid {
+      column-gap: 40px;
+      row-gap: 0px;
+      padding-top: 5%;
+  }
+  .pricing-section .list-item {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    padding: 5px 0;
+  }
+  .pricing-section ul.grid__item.list.pricing_list h2 {
+      margin: 0;
+  }
+
+  .pricing-section .item {
+    white-space: nowrap;
+  }
+
+  .pricing-section .dots {
+    flex-grow: 1;
+    border-bottom: 1px dotted #000; /* Creates the dotted line */
+    margin: 0 10px; /* Space between the item and price */
+  }
+
+  .pricing-section .price {
+    white-space: nowrap;
+  }
+  .pricing-section ul.list.pricing_list {
+      margin: 0px;
+      width: 46%;
+  }
+  p.items_name, li.list-item .pricing {
+      white-space: nowrap;
+      font-weight: bold;
+      margin: 0;
+      text-transform: capitalize;
+  }
+  .pricing-section span.plus_gst {
+      text-transform: lowercase;
+      font-weight: 100;
+  }
+
+  @media(max-width:500px){
+    .pricing-section ul.list.pricing_list {
+        margin: 0px;
+        width: 100%;
+    }
+  }
+</style>
+<div id="pricing_section">
+  <div class="main-section">
+    <div class="page-width">
+      <div class="main_color">
+        {% if section.settings.caption %}
+          <div class="caption">{{ section.settings.caption }}</div>
+        {% endif %}
+        {% if section.settings.heading %}
+          <h3 class="h1">{{ section.settings.heading }}</h3>
+        {% endif %}
+        {% if section.settings.subheading %}
+          <div class="subheading" style="font-family:Open Sans !important;">{{ section.settings.subheading }}</div>
+        {% endif %}
+        <div class="grid">
+          <ul class="list pricing_list">
+            {% for block in section.blocks %}
+              {% if block.settings.heading != blank %}
+                <h3 class="h2" style="font-family:Poppins !important;">{{ block.settings.heading }}</h3>
+              {% endif %}
+              {% if block.settings.items != blank %}
+                <li class="list-item">
+                  {{ 'dots.svg' | inline_asset_content }}
+                  <p class="items_name" style="font-family:Open Sans !important;">{{ block.settings.items }}</p>
+                  <span class="dots"></span>
+                  <p class="start_from items_name" style="font-family:Open Sans !important;">
+                    {{ block.settings.start_from }}
+                  </p>
+                  <p class="pricing" style="font-family:Open Sans !important;">{{ block.settings.pricing }}</p>
+                  <p class="Ea_text items_name">{{ block.settings.ea_text }}</p>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+          <ul class="list pricing_list">
+            {% for block in section.blocks %}
+              {% if block.settings.heading_right != blank %}
+                <h3 class="h2" style="font-family:Poppins !important;">{{ block.settings.heading_right }}</h3>
+              {% endif %}
+              {% if block.settings.items_right != blank %}
+                <li class="list-item">
+                  {{ 'dots.svg' | inline_asset_content }}
+                  <p class="items_name" style="font-family:Open Sans !important;">{{ block.settings.items_right }}</p>
+                  <span class="dots"></span>
+                  <p class="start_from items_name" style="font-family:Open Sans !important;">
+                    {{ block.settings.start_from }}
+                  </p>
+                  <p style="font-family:Open Sans !important;" class="pricing">
+                    {{ block.settings.pricing_right }}
+                    {% comment %} <span class="plus_gst"> {{ block.settings.plus_gst }} </span> {% endcomment %}
+                  </p>
+                  <p class="Ea_text items_name">{{ block.settings.ea_text }}</p>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% if section.settings.image != blank %}
+        <div class="image_bottom">
+          <img src="{{ section.settings.image|img_url:'master' }}" width="100%" height="auto">
+        </div>
+      {% endif %}
+    </div>
+    {% if section.settings.section_bg_image != blank %}
+      <div class="section_bg_image">
+        <img
+          class="small-hide"
+          src="{{ section.settings.section_bg_image|img_url:'master' }}"
+          width="100%"
+          height="auto"
+        >
+        <img
+          class="large-up-hide medium-hide"
+          src="{{ section.settings.section_bg_image_mob|img_url:'master' }}"
+          width="100%"
+          height="auto"
+        >
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Pricing",
+  "class": "pricing-section",
+  "settings": [
+      {
+        "type": "image_picker",
+        "id": "section_bg_image",
+        "label": "Desktop Bottom Bg Section Text Image"
+      },
+      {
+        "type": "image_picker",
+        "id": "section_bg_image_mob",
+        "label": "Mobile Bottom Bg Section Text Image"
+      },
+      {
+        "type": "text",
+        "id": "caption",
+        "default": "— Pricing",
+        "label": "Caption"
+      },
+      {
+        "type": "text",
+        "id": "heading",
+        "default": "We believe in upfront pricing with no hidden fees",
+        "label": "Heading"
+      },
+      {
+        "type": "text",
+        "id": "subheading",
+        "default": "Single item price $120 plus gst. Each item there after price is added to the first $120.",
+        "label": "Heading"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Bottom right Image"
+      }
+   ],
+    "blocks": [
+    {
+      "type": "list",
+      "name": "List Left Side",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "Mirrors, pictures, clocks, art:",
+          "label": "Heading"
+        },
+        {
+          "type": "text",
+          "id": "items",
+          "default": "1 item",
+          "label": "Item Name"
+        },
+        {
+          "type": "text",
+          "id": "start_from",
+          "label": "starts from"
+        },
+        {
+          "type": "text",
+          "id": "pricing",
+          "default": "$120",
+          "label": "Item Price"
+        },
+        {
+          "type": "text",
+          "id": "ea_text",
+          "label": "EA text"
+        }
+      ]
+    },
+    {
+      "type": "list_right",
+      "name": "List Right Side",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading_right",
+          "default": "Mirrors, pictures, clocks, art:",
+          "label": "Heading"
+        },
+        {
+          "type": "text",
+          "id": "items_right",
+          "default": "1 item",
+          "label": "Item Name"
+        },
+        {
+          "type": "text",
+          "id": "start_from",
+          "label": "starts from"
+        },
+        {
+          "type": "text",
+          "id": "pricing_right",
+          "default": "$120",
+          "label": "Item Price"
+        },
+        {
+          "type": "text",
+          "id": "ea_text",
+          "label": "EA text"
+        }
+      ]
+    }
+ ],
+  "presets": [
+    {"name": "Pricing"}
+  ]
+}
+{% endschema %}
+<!-- <script>
+  //this script require jquery
+
+  el = $("#pricing_section");
+  flagIn = false;
+  flagOut = true;
+
+  $(document).scroll(function () {
+    if (window.pageYOffset - el.outerHeight() < el.offset().top && window.pageYOffset + $(window).outerHeight() > el.offset().top ){
+  		//appear on screen
+      flagIn=true;
+      //call your function only on appear
+  		if(flagIn==true && flagOut==true){
+  			flagOut=false;
+               console.log("yesssss");
+            $('.pricing').each(function() {
+                var $this = $(this);
+
+                // Extract the number from the text
+                var priceText = $this.text().replace(/[^0-9]/g, '');
+                var price = parseInt(priceText);
+
+                // Animate from 0 to the extracted price
+                $({ Counter: 0 }).animate({ Counter: price }, {
+                    duration: 3000,
+                    easing: 'swing',
+                    step: function(now) {
+                        $this.text('$' + Math.floor(now));
+                    }
+                });
+            });
+  		}
+  	}
+  	else{
+      //not on screen
+  		flagOut=true;
+      //call your function only on disappear
+  		if(flagIn==true && flagOut==true){
+  			flagIn=false;
+               console.log("nooooooo");
+  		}
+  	}
+  });
+
+
+
+  //$(document).ready(function() {
+
+      // $('.pricing').each(function() {
+      //     var $this = $(this);
+
+      //     // Extract the number from the text
+      //     var priceText = $this.text().replace(/[^0-9]/g, '');
+      //     var price = parseInt(priceText);
+
+      //     // Animate from 0 to the extracted price
+      //     $({ Counter: 0 }).animate({ Counter: price }, {
+      //         duration: 2000,
+      //         easing: 'swing',
+      //         step: function(now) {
+      //             $this.text('$' + Math.floor(now));
+      //         }
+      //     });
+      // });
+  //});
+</script>
+ -->
