@@ -1,0 +1,610 @@
+{% comment %}
+  Testimonials Section for Shopify
+  - "Read More" button for long testimonials on ALL screen sizes.
+  - Text is clamped to ~3 lines by default.
+  - Section header text (eyebrow, title, description) aligned to the left for all screen sizes
+  - User controls for section and card background colors
+  - Independent text color and font size controls for each text field
+  - Card border set to 3px with user-selectable color
+  - Star-based rating system for each testimonial
+  - All text, images, ratings, colors, and font sizes user-selectable via schema
+  - Infinite scrolling with CSS keyframes
+  - Pause on hover with CSS
+  - Card tilt on hover with CSS
+{% endcomment %}
+
+{% style %}
+  .testimonials-section {
+    padding: 4rem 0;
+    background: {{ section.settings.section_bg_color | default: '#1a2526' }};
+  }
+  .testimonials-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  .section-header {
+    text-align: left;
+    margin-bottom: 4rem;
+    padding-left: 1.5rem;
+    padding-right: 1rem;
+  }
+  .section-header__eyebrow {
+    font-size: {{ section.settings.eyebrow_font_size | default: 16 }}px;
+    color: {{ section.settings.eyebrow_text_color | default: '#a0a0a0' }};
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.75rem;
+  }
+  .section-header__title {
+    font-size: {{ section.settings.title_font_size | default: 48 }}px;
+    font-weight: 800;
+    color: {{ section.settings.title_text_color | default: '#ffffff' }};
+    margin-bottom: 1rem;
+  }
+  .section-header__description {
+    font-size: {{ section.settings.description_font_size | default: 24 }}px;
+    color: {{ section.settings.description_text_color | default: '#a0a0a0' }};
+    max-width: 650px;
+    line-height: 1.5;
+  }
+  .testimonials-scroller {
+    overflow: hidden;
+    position: relative;
+    padding: 1rem 0;
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  }
+  .testimonials-track {
+    display: flex;
+    gap: 2.5rem;
+    width: max-content;
+    animation: scroll-left 50s linear infinite;
+  }
+  .testimonials-track:hover {
+    animation-play-state: paused;
+  }
+  .testimonial-card {
+    max-width: 280px;
+    padding: 1.5rem;
+    background: {{ section.settings.card_bg_color | default: '#2a3b3d' }};
+    border: 3px solid {{ section.settings.card_border_color | default: '#3a4b4d' }};
+    border-radius: 3rem;
+    box-shadow: none;
+    transition: transform 0.3s ease;
+    flex: 0 0 auto;
+  }
+  .testimonial-card:hover {
+    transform: rotate(-3deg);
+  }
+  .testimonial__header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .testimonial__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #3a4b4d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .testimonial__avatar img {
+    max-height: 100%;
+    width: auto;
+  }
+  .testimonial__name {
+    font-weight: 700;
+    font-size: {{ section.settings.name_font_size | default: 18 }}px;
+    color: {{ section.settings.name_text_color | default: '#ffffff' }};
+  }
+  .testimonial__position {
+    font-size: {{ section.settings.position_font_size | default: 14 }}px;
+    color: {{ section.settings.position_text_color | default: '#a0a0a0' }};
+  }
+  .testimonial__text {
+    font-size: {{ section.settings.testimonial_font_size | default: 16 }}px;
+    color: {{ section.settings.testimonial_text_color | default: '#d0d0d0' }};
+    line-height: 1.6;
+    margin-top: 0.5rem;
+    max-height: 4.8em; /* 1.6em line-height * 3 lines */
+    overflow: hidden;
+    transition: max-height 0.35s ease-in-out;
+  }
+  .testimonial__text.is-expanded {
+    max-height: 50em; /* Large value to ensure all content is visible */
+  }
+  .read-more-btn {
+    background: none;
+    border: none;
+    color: {{ section.settings.star_filled_color | default: '#FA8443' }};
+    cursor: pointer;
+    font-weight: 700;
+    padding: 0.25rem 0 0 0;
+    font-size: inherit;
+    display: inline-block;
+  }
+
+  .star-rating-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 0.75rem;
+  }
+  .star-rating-wrapper {
+    display: inline-block;
+    margin-top: -4.5px;
+    position: relative;
+    font-size: 16px;
+    line-height: 1;
+    color: {{ section.settings.star_empty_color | default: '#3b3838' }};
+    flex-shrink: 0;
+    letter-spacing: 2px;
+  }
+  .star-rating-foreground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: {{ section.settings.star_filled_color | default: '#FA8443' }};
+  }
+
+  @keyframes scroll-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* UPDATED: Media query no longer disables text clamping */
+  @media (min-width: 768px) {
+    .testimonials-section {
+      padding: 6rem 0;
+    }
+    .section-header {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+    .testimonial-card {
+      max-width: 480px;
+      padding: 3.5rem;
+    }
+    .testimonial__avatar {
+      width: 60;
+      height: 60;
+    }
+    /*
+      REMOVED: The rules that disabled truncation on desktop have been removed.
+      The text will now be clamped on all screen sizes, allowing the "Read More"
+      button to appear as needed.
+    */
+    .star-rating-wrapper {
+      font-size: 20px;
+    }
+  }
+{% endstyle %}
+
+<section class="testimonials-section">
+  <div class="testimonials-container">
+    {% if section.settings.eyebrow != blank
+      or section.settings.title != blank
+      or section.settings.description != blank
+    %}
+      <div class="section-header">
+        {% if section.settings.eyebrow != blank %}
+          <div class="section-header__eyebrow">
+            {{ section.settings.eyebrow | escape }}
+          </div>
+        {% endif %}
+        {% if section.settings.title != blank %}
+          <h2 class="section-header__title">
+            {{ section.settings.title | escape }}
+          </h2>
+        {% endif %}
+        {% if section.settings.description != blank %}
+          <p class="section-header__description">
+            {{ section.settings.description | escape }}
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+    {% if section.blocks.size > 0 %}
+      <div class="testimonials-scroller">
+        <div class="testimonials-track" id="testimonials-track-{{ section.id }}">
+          {% comment %} First loop of testimonials (the interactive ones) {% endcomment %}
+          {% for block in section.blocks %}
+            <div class="testimonial-card" {{ block.shopify_attributes }}>
+              <div class="testimonial__header">
+                <div class="testimonial__avatar">
+                  {% if block.settings.avatar != blank %}
+                    <img
+                      src="{{ block.settings.avatar | img_url: '120x' }}"
+                      alt="{{ block.settings.name | escape }}"
+                      loading="lazy"
+                      width="60"
+                      height="60"
+                    >
+                  {% else %}
+                    <span>?</span>
+                  {% endif %}
+                </div>
+                <div>
+                  {% if block.settings.name != blank %}
+                    <div class="testimonial__name">{{ block.settings.name | escape }}</div>
+                  {% endif %}
+                  {% if block.settings.position != blank %}
+                    <div class="testimonial__position">{{ block.settings.position | escape }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              {% if block.settings.show_star_rating %}
+                <div class="star-rating-container">
+                  <div
+                    class="star-rating-wrapper"
+                    role="img"
+                    aria-label="Rating: {{ block.settings.star_rating | round: 1 }} out of 5 stars"
+                  >
+                    ★★★★★
+                    <div
+                      class="star-rating-foreground"
+                      style="width: {{ block.settings.star_rating | divided_by: 5.0 | times: 100.0 }}%;"
+                    >
+                      ★★★★★
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+              {% if block.settings.text != blank %}
+                <div class="testimonial__text-wrapper">
+                  <p class="testimonial__text">{{ block.settings.text | escape }}</p>
+                  {% comment %} "Read More" button will be inserted here by JavaScript if needed {% endcomment %}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          {% comment %} Duplicate loop for seamless infinite scroll (non-interactive) {% endcomment %}
+          {% for block in section.blocks %}
+            <div class="testimonial-card" aria-hidden="true">
+              <div class="testimonial__header">
+                <div class="testimonial__avatar">
+                  {% if block.settings.avatar != blank %}
+                    <img
+                      src="{{ block.settings.avatar | img_url: '120x' }}"
+                      alt=""
+                      loading="lazy"
+                      width="60"
+                      height="60"
+                    >
+                  {% else %}
+                    <span>?</span>
+                  {% endif %}
+                </div>
+                <div>
+                  {% if block.settings.name != blank %}
+                    <div class="testimonial__name">{{ block.settings.name | escape }}</div>
+                  {% endif %}
+                  {% if block.settings.position != blank %}
+                    <div class="testimonial__position">{{ block.settings.position | escape }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              {% if block.settings.show_star_rating %}
+                <div class="star-rating-container">
+                  <div class="star-rating-wrapper">
+                    ★★★★★
+                    <div
+                      class="star-rating-foreground"
+                      style="width: {{ block.settings.star_rating | divided_by: 5.0 | times: 100.0 }}%;"
+                    >
+                      ★★★★★
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+              {% if block.settings.text != blank %}
+                <div class="testimonial__text-wrapper">
+                  <p class="testimonial__text">{{ block.settings.text | escape }}</p>
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Text",
+      "default": "What Clients Say"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_text_color",
+      "label": "Eyebrow Text Color",
+      "default": "#a0a0a0"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_font_size",
+      "label": "Eyebrow Font Size",
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Happy Clients"
+    },
+    {
+      "type": "color",
+      "id": "title_text_color",
+      "label": "Title Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Title Font Size",
+      "min": 20,
+      "max": 60,
+      "step": 1,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Section Description",
+      "default": "Hear from our satisfied clients about their experiences."
+    },
+    {
+      "type": "color",
+      "id": "description_text_color",
+      "label": "Description Text Color",
+      "default": "#a0a0a0"
+    },
+    {
+      "type": "range",
+      "id": "description_font_size",
+      "label": "Description Font Size",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background Color",
+      "default": "#1a2526"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card Background Color",
+      "default": "#2a3b3d"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card Border Color",
+      "default": "#3a4b4d"
+    },
+    {
+      "type": "color",
+      "id": "name_text_color",
+      "label": "Testimonial Name Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "name_font_size",
+      "label": "Testimonial Name Font Size",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "default": 18,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "position_text_color",
+      "label": "Testimonial Position Text Color",
+      "default": "#a0a0a0"
+    },
+    {
+      "type": "range",
+      "id": "position_font_size",
+      "label": "Testimonial Position Font Size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "testimonial_text_color",
+      "label": "Testimonial Text Color",
+      "default": "#d0d0d0"
+    },
+    {
+      "type": "range",
+      "id": "testimonial_font_size",
+      "label": "Testimonial Text Font Size",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Star Rating Settings"
+    },
+    {
+      "type": "color",
+      "id": "star_filled_color",
+      "label": "Filled Star Color",
+      "default": "#FA8443"
+    },
+    {
+      "type": "color",
+      "id": "star_empty_color",
+      "label": "Empty Star Color",
+      "default": "#3b3838"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "Client Avatar Image"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Client Name",
+          "default": "Client Name"
+        },
+        {
+          "type": "text",
+          "id": "position",
+          "label": "Client Position",
+          "default": "Position @ Company"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Testimonial Text",
+          "default": "This is a testimonial about the great work done."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_star_rating",
+          "label": "Show Star Rating",
+          "default": true
+        },
+        {
+          "type": "range",
+          "id": "star_rating",
+          "label": "Star Rating Value (0-5)",
+          "min": 0,
+          "max": 5,
+          "step": 0.1,
+          "default": 4.7
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "settings": {
+        "eyebrow": "What Clients Say",
+        "title": "Happy Clients",
+        "description": "Hear from our satisfied clients about their experiences.",
+        "eyebrow_font_size": 16,
+        "title_font_size": 48,
+        "description_font_size": 24,
+        "name_font_size": 18,
+        "position_font_size": 14,
+        "testimonial_font_size": 16
+      },
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "name": "Daniel White",
+            "position": "CEO @ InnovateCo",
+            "text": "Massab’s ability to create seamless user experiences is unmatched. Our website has seen a significant increase in conversions since launching the new design. We couldn’t be happier with the results and the professionalism shown throughout the entire project.",
+            "show_star_rating": true,
+            "star_rating": 4.8
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "name": "Emily Carter",
+            "position": "Product Manager @ GlobalTech",
+            "text": "MASSAB is a true frontend wizard. He took our complex product and transformed it into an intuitive and engaging user interface. We’re already seeing positive feedback from our customers.",
+            "show_star_rating": true,
+            "star_rating": 4.9
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "name": "Michael Brown",
+            "position": "Director of IT @ MegaCorp",
+            "text": "Massab’s work on our website has been nothing short of exceptional. He’s a talented developer who is also a great communicator. We highly recommend him for any web development needs.",
+            "show_star_rating": true,
+            "star_rating": 4.7
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<script>
+  // This script is unchanged and works correctly with the updated CSS.
+  document.addEventListener('DOMContentLoaded', function() {
+    const sectionId = '{{ section.id }}';
+    const track = document.getElementById(`testimonials-track-${sectionId}`);
+
+    if (track && track.children.length > 0) {
+      const cardCount = track.querySelectorAll('.testimonial-card:not([aria-hidden="true"])').length;
+      const duration = Math.max(40, cardCount * 10);
+      track.style.animationDuration = `${duration}s`;
+    }
+
+    setTimeout(function() {
+      const testimonialTexts = document.querySelectorAll(
+        `#testimonials-track-${sectionId} .testimonial-card:not([aria-hidden="true"]) .testimonial__text`
+      );
+
+      testimonialTexts.forEach(textElement => {
+        if (textElement.scrollHeight > textElement.clientHeight) {
+          const readMoreBtn = document.createElement('button');
+          readMoreBtn.textContent = 'Read More';
+          readMoreBtn.className = 'read-more-btn';
+          readMoreBtn.setAttribute('aria-expanded', 'false');
+
+          textElement.parentElement.appendChild(readMoreBtn);
+
+          readMoreBtn.addEventListener('click', function() {
+            const isExpanded = textElement.classList.toggle('is-expanded');
+            this.textContent = isExpanded ? 'Read Less' : 'Read More';
+            this.setAttribute('aria-expanded', isExpanded);
+          });
+        }
+      });
+    }, 100);
+  });
+</script>
