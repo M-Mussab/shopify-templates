@@ -1,0 +1,414 @@
+{% comment %}
+  sections/our-services.liquid
+{% endcomment %}
+
+<section
+  class="our-services"
+  style="background-color: {{ section.settings.background_color }}; {% if section.settings.background_image %}background-image: url('{{ section.settings.background_image | img_url: 'master' }}'); background-size: cover; background-position: center;{% endif %}"
+>
+  <div
+    class="page-width"
+    style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;"
+  >
+    {% if section.settings.section_heading %}
+      <h2
+        class="our-services__title"
+        style="
+          font-family: {{ section.settings.heading_font }};
+          color: {{ section.settings.heading_color }};
+          font-size: {{ section.settings.heading_size }}px;
+          font-weight: {{ section.settings.heading_weight }};
+          margin-bottom: 0.5em;
+        "
+      >
+        {{ section.settings.section_heading }}
+      </h2>
+    {% endif %}
+    {% if section.blocks.size > 1 %}
+      <ul class="our-services__tabs" role="tablist">
+        {% for block in section.blocks %}
+          <li
+            style="text-transform:uppercase;"
+            class="our-services__tab button {% if forloop.first %}button--primary{% else %}button--secondary{% endif %}"
+            data-index="{{ forloop.index0 }}"
+            role="tab"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-controls="panel-{{ section.id }}-{{ block.id }}"
+            tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+          >
+            {{ block.settings.tab_label }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <div class="our-services__panes">
+      {% for block in section.blocks %}
+        <div
+          class="our-services__pane{% if forloop.first %} is-active{% endif %}"
+          id="panel-{{ section.id }}-{{ block.id }}"
+          data-index="{{ forloop.index0 }}"
+          role="tabpanel"
+          {% unless forloop.first %}
+            hidden
+          {% endunless %}
+        >
+          <div class="our-services__text">
+            {% if block.settings.service_heading %}
+              <h3
+                style="
+                  color: {{ section.settings.service_heading_color }};
+                  font-size: {{ section.settings.service_heading_size }}px;
+                  font-weight: {{ section.settings.service_heading_weight }};
+                  margin-bottom: 0.5em;
+                "
+              >
+                {{ block.settings.service_heading }}
+              </h3>
+            {% endif %}
+            {% if block.settings.service_description %}
+              <div class="our-services__description-wrapper">
+                <p
+                  class="our-services__description"
+                  style="
+                    color: {{ section.settings.service_description_color }};
+                    font-size: {{ section.settings.service_description_size }}px;
+                    font-weight: {{ section.settings.service_description_weight }};
+                    line-height: 1.4;
+                  "
+                >
+                  {{ block.settings.service_description | strip_html }}
+                </p>
+              </div>
+            {% endif %}
+            {% if block.settings.button_label != blank %}
+              <a
+                href="{{ block.settings.button_link }}"
+                class="button button--primary"
+              >
+                {{- block.settings.button_label -}}
+              </a>
+            {% endif %}
+          </div>
+          <div class="our-services__gallery-wrapper">
+            <div class="our-services__gallery" data-slider-id="{{ section.id }}-{{ block.id }}">
+              {% for i in (1..3) %}
+                {% assign key = 'image_' | append: i %}
+                {% assign img = block.settings[key] %}
+                {% if img %}
+                  <div class="our-services__slide">
+                    <img
+                      src="{{ img | img_url: '800x' }}"
+                      alt="{{ img.alt | escape }}"
+                      loading="lazy"
+                      class="our-services__image"
+                    >
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+      .our-services { position: relative; }
+
+      .our-services__tabs {
+        display: flex;
+        gap: 2em;
+        margin-bottom: 1.5em;
+        padding: 0;
+        list-style: none;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      .button--secondary {
+        background-color: #f0f0f0;
+        color: #333;
+        border: 1px solid #ccc;
+      }
+
+      .our-services__panes > div {
+        display: none;
+      }
+      .our-services__pane.is-active {
+        display: flex;
+        gap: 2em;
+        align-items: flex-start;
+      }
+
+      .our-services__text {
+        flex: 1 1 40%;
+        flex-direction:column;
+        min-width: 295px;
+      }
+      .our-services__gallery-wrapper {
+        flex: 1 1 60%;
+      }
+      .our-services__gallery {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+      }
+      .our-services__slide {
+        flex: 0 0 auto;
+        width: 100%;
+        margin-right: 10px;
+      }
+
+      /* taller & full-width images */
+      .our-services__image {
+        width: 100%;
+        height: 280px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .our-services__description {
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+
+      /* custom arrows beneath text */
+    {% if section.blocks.size > 1 %}
+     .tab-nav-wrapper {
+      display: flex !important;
+      gap: 1em;
+      margin-top: 1em;
+    }
+    .tab-nav-wrapper .tab-nav {
+      display: inline-flex !important;
+    }
+      .tab-nav-wrapper .tab-nav {
+        background-color: #1a3c5e;
+        border: none;
+        color: #fff;
+        width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      /* hide default dots on desktop */
+      .slick-dots { display: none !important; }
+  {% else %}
+       .tab-nav-wrapper {
+      display: none !important;
+
+    }
+    {% endif %}
+      @media (max-width: 780px) {
+        .our-services { background-image: none !important; }
+        .our-services__title { font-size: {{ section.settings.mobile_heading_size }}px !important; }
+        .our-services__pane.is-active {
+          flex-direction: column;
+          gap: 1em;
+        }
+        .our-services__text,
+        .our-services__gallery-wrapper {
+          width: 100%;
+        }
+        .our-services__slide {
+          width: 100%;
+        }
+        .our-services__tabs {
+          display: none;
+          gap: 0.5em;
+        }
+
+        /* hide scrollbars */
+        .our-services__gallery {
+          overflow-x: hidden !important;
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .our-services__gallery::-webkit-scrollbar {
+          display: none;
+        }
+
+        /* hide slick arrows on mobile */
+        .slick-prev, .slick-next {
+          display: none !important;
+        }
+
+        /* show dots under slider */
+        .slick-dots {
+          display: block !important;
+          margin-top: 1em;
+        }
+      }
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script>
+    $(document).ready(function(){
+      // Tab click → activate pane & initialize/refresh its carousel
+      $('.our-services__tab').on('click', function(){
+        var idx = $(this).data('index'),
+            $sec = $(this).closest('.our-services');
+
+        $sec.find('.our-services__tab')
+          .removeClass('button--primary').addClass('button--secondary')
+          .attr({'aria-selected':'false','tabindex':'-1'});
+        $(this)
+          .removeClass('button--secondary').addClass('button--primary')
+          .attr({'aria-selected':'true','tabindex':'0'});
+
+        $sec.find('.our-services__pane')
+          .removeClass('is-active')
+          .attr('hidden','hidden');
+        var $active = $sec.find('.our-services__pane[data-index="'+idx+'"]');
+        $active.addClass('is-active').removeAttr('hidden');
+
+        var $gallery = $active.find('.our-services__gallery');
+        if ($gallery.hasClass('slick-initialized')) {
+          $gallery.slick('refresh');
+        } else {
+          $gallery.slick({
+            slidesToShow: {{ section.settings.slides_to_show | default: 3 }},
+            slidesToScroll: 1,
+            arrows: true,
+            dots: false,
+            infinite: true,
+            autoplay: true,
+            autoplaySpeed:3000 ,
+            swipe: true,
+            adaptiveHeight: false,
+            centerMode: true,
+            centerPadding: '5%',
+            responsive: [
+              { breakpoint: 750, settings: { slidesToShow:1, centerPadding:'5%' } },
+              { breakpoint: 480, settings: { slidesToShow:1, centerPadding:'5%' } }
+            ]
+          });
+        }
+      });
+
+      // Initialize first pane's carousel
+      var $first = $('.our-services__pane.is-active .our-services__gallery');
+      if ($first.length) {
+        $first.slick({
+          slidesToShow: {{ section.settings.slides_to_show | default: 3 }},
+          slidesToScroll: 1,
+          arrows: true,
+          dots: false,
+          infinite: true,
+          autoplay: true,
+          autoplaySpeed: 20000,
+          swipe: true,
+          adaptiveHeight: false,
+          centerMode: true,
+          centerPadding: '5%',
+          responsive: [
+            { breakpoint: 750, settings: { slidesToShow:1, centerPadding:'5%' } },
+            { breakpoint: 480, settings: { slidesToShow:1, centerPadding:'5%' } }
+          ]
+        });
+      }
+
+      // Auto-rotate tabs
+      var rotateInterval = 20000, rotateTimer;
+      function startAutoRotate($sec) {
+        clearInterval(rotateTimer);
+        rotateTimer = setInterval(function(){
+          var $tabs = $sec.find('.our-services__tab'),
+              $curr = $tabs.filter('[aria-selected="true"]'),
+              next = (parseInt($curr.data('index')) + 1) % $tabs.length;
+          $tabs.eq(next).click();
+        }, rotateInterval);
+      }
+      function stopAutoRotate() {
+        clearInterval(rotateTimer);
+      }
+
+      $('.our-services').each(function(){
+        var $sec = $(this);
+
+        // inject custom arrows under the text
+        $sec.find('.our-services__pane').each(function(){
+          var $p = $(this);
+          $p.find('.our-services__text').append(
+    '<div class="tab-nav-wrapper">' +
+      '<button class="tab-nav prev">&larr;</button>' +
+      '<button class="tab-nav next">&rarr;</button>' +
+    '</div>'
+  );
+        });
+
+        // custom arrow actions
+        $sec.on('click','.tab-nav.prev', function(){
+          stopAutoRotate();
+          var $tabs = $sec.find('.our-services__tab'),
+              $curr = $tabs.filter('[aria-selected="true"]'),
+              prev = (parseInt($curr.data('index')) - 1 + $tabs.length) % $tabs.length;
+          $tabs.eq(prev).click();
+        });
+        $sec.on('click','.tab-nav.next', function(){
+          stopAutoRotate();
+          var $tabs = $sec.find('.our-services__tab'),
+              $curr = $tabs.filter('[aria-selected="true"]'),
+              nxt = (parseInt($curr.data('index')) + 1) % $tabs.length;
+          $tabs.eq(nxt).click();
+        });
+
+        $sec.on('click','.our-services__tab, .tab-nav', function(){
+          startAutoRotate($sec);
+        });
+
+        startAutoRotate($sec);
+      });
+    });
+</script>
+
+{% schema %}
+{
+  "name": "Our Services",
+  "settings": [
+    {"type":"text","id":"section_heading","label":"Section heading","default":"Our Services"},
+    {"type":"select","id":"heading_weight","label":"Section heading weight","options":[{"value":"normal","label":"Normal"},{"value":"bold","label":"Bold"},{"value":"bolder","label":"Bolder"},{"value":"lighter","label":"Lighter"}],"default":"bold"},
+    {"type":"text","id":"heading_font","label":"Section heading font family","default":"Courier New, Courier, monospace"},
+    {"type":"color","id":"heading_color","label":"Section heading color","default":"#273755"},
+    {"type":"number","id":"heading_size","label":"Section heading size (px)","default":36},
+    {"type":"number","id":"mobile_heading_size","label":"Section heading size on mobile (px)","default":24},
+    {"type":"image_picker","id":"background_image","label":"Background image"},
+    {"type":"color","id":"background_color","label":"Background color","default":"#ffffff"},
+    {"type":"number","id":"slides_to_show","label":"Images to show","default":3},
+    {"type":"text","id":"aspect_ratio","label":"Aspect ratio for large screens (e.g., 9 / 16)","default":"9 / 16"},
+    {"type":"color","id":"service_heading_color","label":"Service heading color","default":"#273755"},
+    {"type":"number","id":"service_heading_size","label":"Service heading size (px)","default":28},
+    {"type":"select","id":"service_heading_weight","label":"Service heading weight","options":[{"value":"normal","label":"Normal"},{"value":"bold","label":"Bold"},{"value":"bolder","label":"Bolder"}],"default":"bold"},
+    {"type":"color","id":"service_description_color","label":"Description color","default":"#494949"},
+    {"type":"number","id":"service_description_size","label":"Description size (px)","default":16},
+    {"type":"select","id":"service_description_weight","label":"Description weight","options":[{"value":"normal","label":"Normal"},{"value":"bold","label":"Bold"}],"default":"normal"},
+    {"type":"number","id":"padding_top","label":"Top padding (px)","default":20},
+    {"type":"number","id":"padding_bottom","label":"Bottom padding (px)","default":20}
+  ],
+  "blocks": [
+    {
+      "type":"service",
+      "name":"Service",
+      "settings":[
+        {"type":"text","id":"tab_label","label":"Tab label","default":"Service"},
+        {"type":"text","id":"service_heading","label":"Service heading","default":"Service Title"},
+        {"type":"richtext","id":"service_description","label":"Service description","default":"<p>Describe this service here.</p>"},
+        {"type":"text","id":"button_label","label":"Button Label(leave empty if no button needed)"},
+        {"type":"url","id":"button_link","label":"Button Link",},
+        {"type":"image_picker","id":"image_1","label":"Image 1"},
+        {"type":"image_picker","id":"image_2","label":"Image 2"},
+        {"type":"image_picker","id":"image_3","label":"Image 3"}
+      ]
+    }
+  ],
+  "presets":[{"name":"Our Services"}]
+}
+{% endschema %}
