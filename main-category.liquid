@@ -1,0 +1,181 @@
+<div class="collection page-width">
+  {% for block in section.blocks %}
+    {% assign col = block.settings.collection %}
+    {% assign index = forloop.index %}
+    {% assign mob_index = index | modulo: 5 %}
+
+    {% if col %}
+      <div
+        class="
+          collection-item
+          {% if index == 1 or index == 10 %}rectangle-desktop{% endif %}
+          {% if mob_index == 0 %}wide-mobile{% endif %}
+        "
+      >
+        <a href="{{ col.url }}" class="collection-card">
+          <div class="image">
+            <img src="{{ col | image_url: width: 600 }}" alt="{{ col.title }}">
+          </div>
+          <h2 class="collection-title">
+            {{ col.title -}}
+          </h2>
+        </a>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<style>
+      .collection {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin: 40px auto;
+
+        grid-auto-rows: 1fr;
+      }
+
+      .collection-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .collection-card {
+        flex-grow: 1;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        border-radius: 20px;
+        overflow: hidden;
+      }
+
+      .image {
+        width: 100%;
+        overflow: hidden;
+        border-radius: 20px;
+         transition: all 0.4s ease-in-out;
+
+      }
+
+      .collection-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        border-radius: 20px;
+        border:4px solid lightgray;
+          transition: all 0.4s ease-in-out;
+
+      }
+      .collection-card:hover .image {
+    transform: scale(1.02);
+    }
+
+
+      .collection-title {
+        margin-top: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        color: black;
+          transition: all 0.4s ease-in-out;
+
+      }
+    .collection-title:hover {
+  color:#ff0000;
+    }
+      /*  Desktop*/
+      @media (min-width: 769px) {
+        .collection-item:nth-child(1) {
+          grid-column: span 2;
+        }
+
+        .collection-item:nth-child(2),
+        .collection-item:nth-child(3) {
+          grid-column: span 1;
+        }
+
+        .collection-item:nth-child(4),
+        .collection-item:nth-child(5),
+        .collection-item:nth-child(6),
+        .collection-item:nth-child(7) {
+          grid-column: span 1;
+        }
+
+        .collection-item:nth-child(8),
+        .collection-item:nth-child(9) {
+          grid-column: span 1;
+        }
+
+        .collection-item:nth-child(10) {
+          grid-column: span 2;
+        }
+
+        /*  height  */
+        .rectangle-desktop .image,
+        .collection-item:not(.rectangle-desktop) .image {
+          height: 340px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .collection {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+        }
+
+        .collection-item {
+          grid-column: span 1 !important;
+        }
+
+        .collection-item.wide-mobile {
+          grid-column: span 2 !important;
+        }
+
+        .collection-item.wide-mobile .image {
+          aspect-ratio: 16 / 9;
+                    height:150px;
+        }
+
+        .collection-card {
+          flex-direction: column;
+        }
+
+        .collection-card img {
+          object-fit: cover;
+          height:150px;
+        }
+
+        .collection-title {
+          font-size: 14px;
+          text-align: center;
+        }
+      }
+</style>
+
+{% schema %}
+{
+  "name": "Main Collections",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection Block",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Main Collections",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
